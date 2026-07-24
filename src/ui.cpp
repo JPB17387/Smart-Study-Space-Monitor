@@ -63,7 +63,7 @@ void showLogo() {
     display.setCursor(21, 22);
     display.print("Smart Study AI ");
     // string 3
-    display.setCursor(43, 38);
+    display.setCursor(38, 38);
     display.print("Assistant");
     display.display();
     delay(5000);
