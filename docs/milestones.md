@@ -2,3 +2,7 @@
 
 ## Phase 1:
 <p align="justify">Phase 1 of the project, this marks the beginning of the planning and design process, where I'm defining the user interface and overall system experience before moving into hardware integration and embedded software development. This project is being developed as my official entry for the Hackster.io "Invent the Future with Arduino Uno Q and AppLab" Hackathon, with the goal of creating an intelligent study companion that promotes productivity, energy efficiency, and AI-assisted recommendations. I'll be sharing my development journey, challenges, and progress as the project evolves from concept to a fully functional prototype. </p>
+
+<p align="center">
+  <img src="../public/images/Mock UI Design.jpg" alt="Project Logo" width="600" height="500">
+</p>

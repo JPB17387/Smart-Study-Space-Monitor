@@ -1,6 +1,7 @@
 <h1 align="center">SMART STUDY SPACE MONITOR</h1>
 <p align="center">Copyright: Jhon Paul Baonil 2026</p>
-> This is the main project repository of my project for Hackster Invent the Future Global Hackathon.
+<br>
+<p align="center">This is the main project repository of my project for Hackster Invent the Future Global Hackathon.</p>
 
 ## Important Details
 Displays Address: 0x3C
@@ -74,6 +75,20 @@ A5 → OLED SCL
 D2 → PIR OUT
 
 A0 → LDR AO
+```
+
+## Arduino Pin Assignments
+```
+| Component                  | Arduino Pin |
+| -------------------------- | ----------- |
+| PIR Sensor                 | **D2**      |
+| Push Button                | D3          |
+| Active Buzzer              | D4          |
+| Status LED (optional)      | D5          |
+| LDR Sensor (analog output) | A0          |
+| OLED Display (I2C SDA)     | A4          |
+| OLED Display (I2C SCL)     | A5          |
+
 ```
 
 ## Folder Structure
