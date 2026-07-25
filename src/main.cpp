@@ -1,26 +1,17 @@
 #include <Arduino.h>
-
-#include "display.h"
 #include "ui.h"
 #include "pir.h"
 
-void setup() {
-    Serial.begin(9600);
-
+void setup()
+{
     initDisplay();
 
     initPIR();
-
-    showGreeting();
-    showLoadingAnimation();
-    showLogo(); 
 }
 
 void loop()
 {
-    bool motion = isMotionDetected();
+    updatePIR();
 
-    showDashboard(motion);
-
-    delay(100);
+    updateUI();
 }

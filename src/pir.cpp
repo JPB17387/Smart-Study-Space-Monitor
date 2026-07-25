@@ -1,13 +1,88 @@
+#include <Arduino.h>
+#include "config.h"
 #include "pir.h"
 
-#include <Arduino.h>
-// Initialize the PIR sensor pin as an input
+//==================================================
+// Private Variables
+//==================================================
+
+static bool motion = false;
+
+static bool previousMotion = false;
+
+static bool calibrated = false;
+
+static unsigned long calibrationStart = 0;
+
+static unsigned long lastMotionTime = 0;
+
+static unsigned long motionCounter = 0;
+
+//==================================================
+// Initialize PIR
+//==================================================
+
 void initPIR()
 {
     pinMode(PIR_PIN, INPUT);
+
+    calibrationStart = millis();
+
+    lastMotionTime = millis();
 }
-// Returns true if motion is detected 
+
+//==================================================
+// Update PIR
+//==================================================
+
+void updatePIR()
+{
+    if (!calibrated)
+    {
+        if (millis() - calibrationStart >= PIR_CALIBRATION_TIME)
+        {
+            calibrated = true;
+        }
+
+        return;
+    }
+
+    motion = digitalRead(PIR_PIN);
+
+    if (motion && !previousMotion)
+    {
+        motionCounter++;
+
+        lastMotionTime = millis();
+    }
+
+    previousMotion = motion;
+}
+
+//==================================================
+
 bool isMotionDetected()
 {
-    return digitalRead(PIR_PIN) == HIGH;
+    return motion;
+}
+
+//==================================================
+
+bool isPIRCalibrated()
+{
+    return calibrated;
+}
+
+//==================================================
+
+unsigned long getMotionCount()
+{
+    return motionCounter;
+}
+
+//==================================================
+
+unsigned long getIdleSeconds()
+{
+    return (millis() - lastMotionTime) / 1000;
 }

@@ -114,8 +114,6 @@ Smart Study Space Monitor
 │
 ├── src/
 │   ├── main.cpp
-│   ├── display.cpp
-│   ├── display.h
 │   ├── sensors.cpp
 │   ├── sensors.h
 │   ├── timer.cpp
