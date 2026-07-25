@@ -1,35 +1,35 @@
 #ifndef UI_H
 #define UI_H
+
 #include <Arduino.h>
 
-void initDisplay();
-
-void updateUI();
-
-void showGreeting();
-
-void showLoadingAnimation();
-
-void showLogo();
-
-void showDashboard();
-
-void showBreakScreen();
-
-void showIdleScreen();
-
-enum ScreenType
+// Screen states
+enum Screen
 {
+    SCREEN_CALIBRATION,
     SCREEN_GREETING,
     SCREEN_LOADING,
     SCREEN_LOGO,
     SCREEN_DASHBOARD,
-    SCREEN_BREAK,
     SCREEN_IDLE,
-    SCREEN_CALIBRATION
+    SCREEN_BREAK
 };
 
-void setScreen(ScreenType screen);
-void updateScreen();
+// Initialize UI
+void initUI();
+
+// Main UI state machine
+void updateUI(bool motion, int light);
+
+// Individual screens
+void showGreeting();
+void showLoadingAnimation();
+void showLogo();
+void showDashboard(bool motion, int light);
+void showIdleScreen();
+void showBreakScreen();
+
+// Change current screen
+static Screen currentScreen = SCREEN_GREETING;
 
 #endif

@@ -1,5 +1,7 @@
 #include "ui.h"
+#include "ldr.h"
 #include "pir.h"
+#include "config.h"
 
 #include <Arduino.h>
 
@@ -17,6 +19,25 @@ Adafruit_SSD1306 display(
     &Wire,
     -1
 );
+
+void initUI()
+{
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    {
+        while (1);
+    }
+
+    display.clearDisplay();
+    display.display();
+
+    currentScreen = SCREEN_GREETING;
+    lastMotionTime = millis();
+}
+
+void setScreen(Screen screen)
+{
+    currentScreen = screen;
+}
 
 void initDisplay()
 {
@@ -73,7 +94,7 @@ void showLoadingAnimation() {
     delay(200);
   }
 
-  display.print(" done");
+  display.print("done");
   display.display();
 
   delay(1500);
@@ -95,16 +116,11 @@ void showLogo() {
     delay(5000);
 }
 
-void showDashboard()
+void showDashboard(bool motion, int light)
 {
-    bool motion = isMotionDetected();
-
-    display.clearDisplay();
-
     display.clearDisplay();
 
     display.setTextColor(SSD1306_WHITE);
-
     display.setTextSize(1);
 
     display.setCursor(0,0);
@@ -118,15 +134,20 @@ void showDashboard()
     if(motion)
         display.println("Detected");
     else
-        display.println("None");
+        display.println("Idle");
 
-    display.setCursor(0,35);
+    display.setCursor(0,32);
+    display.print("Light : ");
+    display.print(light);
+    display.println("%");
+
+    display.setCursor(0,46);
     display.print("Status: ");
 
     if(motion)
         display.println("Studying");
     else
-        display.println("Idle");
+        display.println("Waiting");
 
     display.display();
 }
@@ -168,9 +189,9 @@ void setScreen(ScreenType screen)
     currentScreen = screen;
 }
 
-void updateUI()
+void updateUI(bool motion, int light)
 {
-    switch(currentScreen)
+    switch (currentScreen)
     {
         case SCREEN_CALIBRATION:
             break;
@@ -188,12 +209,25 @@ void updateUI()
         case SCREEN_LOGO:
             showLogo();
             currentScreen = SCREEN_DASHBOARD;
+
+            if (motion)
+            {
+                lastMotionTime = millis();
+            }
+
             break;
 
         case SCREEN_DASHBOARD:
-            showDashboard();
 
-            if(!isMotionDetected())
+            showDashboard(motion, light);
+
+            if (motion)
+            {
+                lastMotionTime = millis();
+            }
+
+            if (!motion &&
+                millis() - lastMotionTime >= IDLE_TIMEOUT)
             {
                 currentScreen = SCREEN_IDLE;
             }
@@ -201,10 +235,12 @@ void updateUI()
             break;
 
         case SCREEN_IDLE:
+
             showIdleScreen();
 
-            if(isMotionDetected())
+            if (motion)
             {
+                lastMotionTime = millis();
                 currentScreen = SCREEN_DASHBOARD;
             }
 
