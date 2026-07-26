@@ -1,32 +1,42 @@
 #include <Arduino.h>
+
 #include "ui.h"
 #include "pir.h"
 #include "ldr.h"
 
-Screen currentScreen = SCREEN_GREETING;
-
-unsigned long lastMotionTime = 0;
-
-const unsigned long IDLE_TIMEOUT = 10000;
-
-bool lastMotion = false;
-int lastLight = -1;
+//==================================================
+// SETUP
+//==================================================
 
 void setup()
 {
     Serial.begin(9600);
 
-    initLDR();
+    // Initialize sensors
     initPIR();
+    initLDR();
+
+    // Initialize OLED and UI
     initUI();
+
+    Serial.println("Smart Study AI started.");
 }
+
+//==================================================
+// MAIN LOOP
+//==================================================
 
 void loop()
 {
+    // Update the PIR driver's internal state
+    updatePIR();
+
+    // Read current sensor data
     bool motion = isMotionDetected();
 
     int light = getLightPercent();
 
+    // Give sensor data to the UI
     updateUI(motion, light);
 
     delay(100);

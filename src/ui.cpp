@@ -1,10 +1,7 @@
 #include "ui.h"
-#include "ldr.h"
-#include "pir.h"
 #include "config.h"
 
 #include <Arduino.h>
-
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -12,7 +9,10 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
-// Create OLED object
+//==================================================
+// OLED OBJECT
+//==================================================
+
 Adafruit_SSD1306 display(
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
@@ -20,101 +20,152 @@ Adafruit_SSD1306 display(
     -1
 );
 
+//==================================================
+// UI INTERNAL STATE
+//==================================================
+
+// The current screen belongs to the UI system.
+static Screen currentScreen = SCREEN_GREETING;
+
+// Time when motion was last detected.
+static unsigned long lastMotionTime = 0;
+
+// How long the user can remain motionless
+// before entering Idle Mode.
+static const unsigned long IDLE_TIMEOUT = 10000;
+
+//==================================================
+// INITIALIZE UI
+//==================================================
+
 void initUI()
 {
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    if (!display.begin(
+            SSD1306_SWITCHCAPVCC,
+            OLED_ADDRESS))
     {
+        Serial.println("OLED initialization failed!");
+
         while (1);
     }
 
     display.clearDisplay();
+
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+
     display.display();
 
     currentScreen = SCREEN_GREETING;
+
     lastMotionTime = millis();
 }
+
+//==================================================
+// SCREEN CONTROL
+//==================================================
 
 void setScreen(Screen screen)
 {
     currentScreen = screen;
 }
 
-void initDisplay()
+//==================================================
+// GREETING
+//==================================================
+
+void showGreeting()
 {
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-    {
-        while (1);
-    }
-
-    display.clearDisplay();
-    display.display();
-}
-
-void showGreeting() {
-  display.clearDisplay();
-    // string 3
-    display.setTextColor(1);
-    display.setTextSize(2);
-    display.setTextWrap(false);
-    display.setCursor(47, 17);
-    display.print("Hi!");
-    // string 3
-    display.setTextSize(1);
-    display.setCursor(41, 29);
-    display.print("");
-    // string 3
-    display.setCursor(23, 39);
-    display.print("Sir, Jhon Paul");
-    display.display();
-  delay(2000);
-  }
-
-void showLoadingAnimation() {
-
-  for (int dots = 1; dots <= 9; dots++) {
-
     display.clearDisplay();
 
     display.setTextColor(SSD1306_WHITE);
 
-    display.setCursor(4, 5);
-    display.print("Hello Sir Jhon Paul");
+    display.setTextSize(2);
+    display.setTextWrap(false);
 
-    display.setCursor(2, 28);
-    display.print("WELCOME BACK ON TRACK");
+    display.setCursor(47, 17);
+    display.print("Hi!");
 
-    display.setCursor(4, 52);
-    display.print("Loading");
+    display.setTextSize(1);
 
-    for (int i = 0; i < dots; i++) {
-      display.print(".");
+    display.setCursor(23, 39);
+    display.print("Sir, Jhon Paul");
+
+    display.display();
+
+    delay(2000);
+}
+
+//==================================================
+// LOADING ANIMATION
+//==================================================
+
+void showLoadingAnimation()
+{
+    for (int dots = 1; dots <= 9; dots++)
+    {
+        display.clearDisplay();
+
+        display.setTextColor(SSD1306_WHITE);
+        display.setTextSize(1);
+        display.setTextWrap(false);
+
+        display.setCursor(4, 5);
+        display.print("Hello Sir Jhon Paul");
+
+        display.setCursor(2, 28);
+        display.print("WELCOME BACK ON TRACK");
+
+        display.setCursor(4, 52);
+        display.print("Loading");
+
+        for (int i = 0; i < dots; i++)
+        {
+            display.print(".");
+        }
+
+        display.display();
+
+        delay(200);
     }
 
-    display.display();
-    delay(200);
-  }
-
-  display.print("done");
-  display.display();
-
-  delay(1500);
+    delay(1000);
 }
 
-void showLogo() {
-  display.clearDisplay();
-    // rect 1
-    display.drawRect(17, 13, 91, 43, 1);
-    // string 2
-    display.setTextColor(1);
+//==================================================
+// LOGO
+//==================================================
+
+void showLogo()
+{
+    display.clearDisplay();
+
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
     display.setTextWrap(false);
-    display.setCursor(21, 22);
-    display.print("Smart Study AI ");
-    // string 3
+
+    display.drawRect(
+        1,
+        0,
+        127,
+        63,
+        SSD1306_WHITE
+    );
+
+    display.setCursor(23, 22);
+    display.print("Smart Study AI");
+
     display.setCursor(38, 38);
     display.print("Assistant");
+
     display.display();
-    delay(5000);
+
+    delay(3000);
 }
+
+//==================================================
+// DASHBOARD
+//==================================================
 
 void showDashboard(bool motion, int light)
 {
@@ -122,55 +173,76 @@ void showDashboard(bool motion, int light)
 
     display.setTextColor(SSD1306_WHITE);
     display.setTextSize(1);
+    display.setTextWrap(false);
 
-    display.setCursor(0,0);
+    // Header
+    display.setCursor(0, 0);
     display.println("Smart Study AI");
 
-    display.drawLine(0,10,128,10,SSD1306_WHITE);
+    display.drawLine(
+        0,
+        10,
+        127,
+        10,
+        SSD1306_WHITE
+    );
 
-    display.setCursor(0,18);
+    // Motion
+    display.setCursor(0, 18);
     display.print("Motion: ");
 
-    if(motion)
+    if (motion)
+    {
         display.println("Detected");
+    }
     else
-        display.println("Idle");
+    {
+        display.println("None");
+    }
 
-    display.setCursor(0,32);
+    // Light
+    display.setCursor(0, 32);
     display.print("Light : ");
     display.print(light);
     display.println("%");
 
-    display.setCursor(0,46);
+    // Status
+    display.setCursor(0, 46);
     display.print("Status: ");
 
-    if(motion)
+    if (motion)
+    {
         display.println("Studying");
+    }
     else
+    {
         display.println("Waiting");
+    }
 
     display.display();
 }
 
-void showBreakScreen() {
+//==================================================
+// IDLE SCREEN
+//==================================================
+
+void showIdleScreen()
+{
     display.clearDisplay();
 
-    display.setCursor(0,0);
-    display.println("Break Time");
-
-    display.display();
-}
-
-void showIdleScreen() {
-    display.clearDisplay();
-
-    display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
 
     display.setCursor(0, 0);
     display.println("Smart Study AI");
 
-    display.drawLine(0, 10, 128, 10, SSD1306_WHITE);
+    display.drawLine(
+        0,
+        10,
+        127,
+        10,
+        SSD1306_WHITE
+    );
 
     display.setCursor(0, 20);
     display.println("Idle Mode");
@@ -178,76 +250,141 @@ void showIdleScreen() {
     display.setCursor(0, 35);
     display.println("No Motion");
 
+    display.setCursor(0, 50);
+    display.println("Waiting...");
+
     display.display();
 }
 
+//==================================================
+// BREAK SCREEN
+//==================================================
 
-static ScreenType currentScreen = SCREEN_GREETING;
-
-void setScreen(ScreenType screen)
+void showBreakScreen()
 {
-    currentScreen = screen;
+    display.clearDisplay();
+
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+
+    display.setCursor(0, 0);
+    display.println("Break Time");
+
+    display.display();
 }
+
+//==================================================
+// MAIN UI STATE MACHINE
+//==================================================
 
 void updateUI(bool motion, int light)
 {
     switch (currentScreen)
     {
+        //--------------------------------------------------
+        // CALIBRATION
+        //--------------------------------------------------
+
         case SCREEN_CALIBRATION:
+
             break;
+
+
+        //--------------------------------------------------
+        // GREETING
+        //--------------------------------------------------
 
         case SCREEN_GREETING:
+
             showGreeting();
+
             currentScreen = SCREEN_LOADING;
+
             break;
+
+
+        //--------------------------------------------------
+        // LOADING
+        //--------------------------------------------------
 
         case SCREEN_LOADING:
+
             showLoadingAnimation();
+
             currentScreen = SCREEN_LOGO;
+
             break;
+
+
+        //--------------------------------------------------
+        // LOGO
+        //--------------------------------------------------
 
         case SCREEN_LOGO:
+
             showLogo();
+
+            // Start the idle timer when dashboard begins.
+            lastMotionTime = millis();
+
             currentScreen = SCREEN_DASHBOARD;
 
-            if (motion)
-            {
-                lastMotionTime = millis();
-            }
-
             break;
+
+
+        //--------------------------------------------------
+        // DASHBOARD
+        //--------------------------------------------------
 
         case SCREEN_DASHBOARD:
 
             showDashboard(motion, light);
 
+            // Motion means the user is active.
             if (motion)
             {
                 lastMotionTime = millis();
             }
 
+            // Only enter Idle Mode after 10 seconds
+            // without detecting motion.
             if (!motion &&
-                millis() - lastMotionTime >= IDLE_TIMEOUT)
+                (millis() - lastMotionTime >= IDLE_TIMEOUT))
             {
                 currentScreen = SCREEN_IDLE;
             }
 
             break;
 
+
+        //--------------------------------------------------
+        // IDLE
+        //--------------------------------------------------
+
         case SCREEN_IDLE:
 
             showIdleScreen();
 
+            // If the user starts moving again,
+            // return to the dashboard.
             if (motion)
             {
                 lastMotionTime = millis();
+
                 currentScreen = SCREEN_DASHBOARD;
             }
 
             break;
 
+
+        //--------------------------------------------------
+        // BREAK
+        //--------------------------------------------------
+
         case SCREEN_BREAK:
+
             showBreakScreen();
+
             break;
     }
 }

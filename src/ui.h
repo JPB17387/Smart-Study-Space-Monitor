@@ -3,7 +3,10 @@
 
 #include <Arduino.h>
 
-// Screen states
+//==================================================
+// SCREEN STATES
+//==================================================
+
 enum Screen
 {
     SCREEN_CALIBRATION,
@@ -15,21 +18,38 @@ enum Screen
     SCREEN_BREAK
 };
 
-// Initialize UI
+//==================================================
+// INITIALIZATION
+//==================================================
+
 void initUI();
 
-// Main UI state machine
+//==================================================
+// UI STATE MACHINE
+//==================================================
+
 void updateUI(bool motion, int light);
 
-// Individual screens
+//==================================================
+// INDIVIDUAL SCREENS
+//==================================================
+
 void showGreeting();
 void showLoadingAnimation();
 void showLogo();
-void showDashboard(bool motion, int light);
+
+void showDashboard(
+    bool motion,
+    int light
+);
+
 void showIdleScreen();
 void showBreakScreen();
 
-// Change current screen
-static Screen currentScreen = SCREEN_GREETING;
+//==================================================
+// SCREEN CONTROL
+//==================================================
+
+void setScreen(Screen screen);
 
 #endif
