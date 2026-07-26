@@ -3,41 +3,42 @@
 #include "ui.h"
 #include "pir.h"
 #include "ldr.h"
+#include "button.h"
+#include "buzzer.h"
 
-//==================================================
-// SETUP
-//==================================================
+bool lastButtonState = false;
 
 void setup()
 {
     Serial.begin(9600);
 
-    // Initialize sensors
     initPIR();
     initLDR();
-
-    // Initialize OLED and UI
+    initButton();
+    initBuzzer();
     initUI();
 
     Serial.println("Smart Study AI started.");
 }
 
-//==================================================
-// MAIN LOOP
-//==================================================
-
 void loop()
 {
-    // Update the PIR driver's internal state
     updatePIR();
 
-    // Read current sensor data
     bool motion = isMotionDetected();
-
     int light = getLightPercent();
 
-    // Give sensor data to the UI
     updateUI(motion, light);
+
+    bool buttonPressed = isButtonPressed();
+
+    if (buttonPressed && !lastButtonState)
+    {
+        beep(100);
+        Serial.println("Button pressed!");
+    }
+
+    lastButtonState = buttonPressed;
 
     delay(100);
 }
