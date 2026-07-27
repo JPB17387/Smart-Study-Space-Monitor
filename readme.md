@@ -32,7 +32,7 @@ GND → GND
 OUT → D2
 ```
 
-#### LDR Module 
+#### LDR Module Wiring
 ```
 If your LDR module has pins:
 
@@ -54,6 +54,19 @@ Ignore DO for now.
 We'll use the analog value.
 ```
 
+#### Push Button Wiring
+
+```
+GND → GND
+VCC → D7
+```
+
+#### Buzzer Wiring
+```
+GND → GND
+VCC → D8
+```
+
 #### Main Project Wiring
 ```
 UNO
@@ -61,16 +74,22 @@ UNO
 5V
 ├── OLED VCC
 ├── PIR VCC
-└── LDR VCC
+├── LDR VCC
+├── BUZZER VCC
+└── BUTTON VCC
 
 GND
 ├── OLED GND
 ├── PIR GND
-└── LDR GND
+|── LDR GND
+├── BUZZER GND
+└── BUTTON GND
 
 A4 → OLED SDA
 
 A5 → OLED SCL
+
+
 
 D2 → PIR OUT
 
