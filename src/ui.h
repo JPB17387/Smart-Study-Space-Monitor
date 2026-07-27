@@ -34,6 +34,7 @@ void updateUI(bool motion, int light);
 // INDIVIDUAL SCREENS
 //==================================================
 
+void showBootAnimation();
 void showGreeting();
 void showLoadingAnimation();
 void showLogo();

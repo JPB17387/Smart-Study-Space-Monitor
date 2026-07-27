@@ -17,6 +17,7 @@ void setup()
     initButton();
     initBuzzer();
     initUI();
+    showBootAnimation();
 
     Serial.println("Smart Study AI started.");
 }

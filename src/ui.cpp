@@ -97,6 +97,49 @@ void showGreeting()
 }
 
 //==================================================
+// BOOT ANIMATION
+//==================================================
+
+void showBootAnimation()
+{
+    for (int frame = 0; frame < 12; frame++)
+    {
+        display.clearDisplay();
+
+        display.setTextColor(SSD1306_WHITE);
+        display.setTextSize(1);
+        display.setTextWrap(false);
+
+        // Title
+        display.setCursor(23, 04);
+        display.print("Smart Study AI");
+
+        // Boot label
+        display.setCursor(44, 24);
+        display.print("Booting");
+
+        // Draw loader frame
+        display.drawRect(14, 38, 100, 10, SSD1306_WHITE);
+
+        // Fill loader
+        int fillWidth = (frame + 1) * 8;
+        if (fillWidth > 98)
+        {
+            fillWidth = 98;
+        }
+
+        display.fillRect(15, 39, fillWidth, 8, SSD1306_WHITE);
+
+        // Small status text
+        display.setCursor(20, 54);
+        display.print("Initializing...");
+
+        display.display();
+        delay(250);
+    }
+}
+
+//==================================================
 // LOADING ANIMATION
 //==================================================
 
