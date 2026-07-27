@@ -14,8 +14,18 @@ enum Screen
     SCREEN_LOADING,
     SCREEN_LOGO,
     SCREEN_DASHBOARD,
-    SCREEN_IDLE,
-    SCREEN_BREAK
+    SCREEN_MENU,
+    SCREEN_FOCUS,
+    SCREEN_BREAK,
+    SCREEN_AI_RECOMMENDATION,
+    SCREEN_IDLE
+};
+
+enum SessionMode
+{
+    SESSION_FOCUS,
+    SESSION_BREAK,
+    SESSION_AI
 };
 
 //==================================================
@@ -41,6 +51,17 @@ void showLogo();
 
 void showDashboard(
     bool motion,
+    int light,
+    SessionMode selectedMode
+);
+void showFocusScreen(
+    unsigned long elapsedSeconds, 
+    bool motion, 
+    int light
+);
+
+void showAIRecommendation(
+    bool motion, 
     int light
 );
 

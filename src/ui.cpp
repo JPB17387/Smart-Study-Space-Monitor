@@ -1,5 +1,7 @@
 #include "ui.h"
 #include "config.h"
+#include "button.h
+#include "ldr.h
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -8,6 +10,14 @@
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
+
+static Screen currentScreen = SCREEN_GREETING;
+static SessionMode selectedMode = SESSION_FOCUS;
+
+static unsigned long lastMotionTime = 0;
+static unsigned long sessionStartTime = 0;
+
+static const unsigned long IDLE_TIMEOUT = 10000;
 
 //==================================================
 // OLED OBJECT
@@ -207,6 +217,119 @@ void showLogo()
 }
 
 //==================================================
+// MODE MENU DISPLAY
+//==================================================
+
+void showModeMenu(SessionMode mode)
+{
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setTextWrap(false);
+
+    display.setCursor(0, 0);
+    display.println("Session Menu");
+
+    display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+
+    display.setCursor(0, 18);
+    display.print("Select: ");
+
+    if (mode == SESSION_FOCUS)
+    {
+        display.println("Focus");
+    }
+    else if (mode == SESSION_BREAK)
+    {
+        display.println("Break");
+    }
+    else
+    {
+        display.println("AI Tips");
+    }
+
+    display.setCursor(0, 34);
+    display.println("Short press: change");
+
+    display.setCursor(0, 46);
+    display.println("Long press: start");
+
+    display.display();
+}
+
+//==================================================
+// BREAK SESSION SCREEN
+//==================================================
+
+void showBreakScreen(unsigned long elapsedSeconds, bool motion, int light)
+{
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setTextWrap(false);
+
+    display.setCursor(0, 0);
+    display.println("BREAK SESSION");
+
+    display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+
+    display.setCursor(0, 18);
+    display.print("Time : ");
+    display.print(elapsedSeconds);
+    display.println(" s");
+
+    display.setCursor(0, 30);
+    display.print("Motion: ");
+    display.println(motion ? "YES" : "NO");
+
+    display.setCursor(0, 42);
+    display.print("Light : ");
+    display.print(light);
+    display.println("%");
+
+    display.setCursor(0, 54);
+    display.println("Rest well");
+
+    display.display();
+}
+
+//==================================================
+// FOCUS SCREEN DASHBOARD
+//==================================================
+
+void showFocusScreen(unsigned long elapsedSeconds, bool motion, int light)
+{
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setTextWrap(false);
+
+    display.setCursor(0, 0);
+    display.println("FOCUS SESSION");
+
+    display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+
+    display.setCursor(0, 18);
+    display.print("Time : ");
+    display.print(elapsedSeconds);
+    display.println(" s");
+
+    display.setCursor(0, 30);
+    display.print("Motion: ");
+    display.println(motion ? "YES" : "NO");
+
+    display.setCursor(0, 42);
+    display.print("Light : ");
+    display.print(light);
+    display.println("%");
+
+    display.setCursor(0, 54);
+    display.println("Press to exit");
+
+    display.display();
+}
+
+//==================================================
 // DASHBOARD
 //==================================================
 
@@ -300,18 +423,38 @@ void showIdleScreen()
 }
 
 //==================================================
-// BREAK SCREEN
+// FOR AI GENERATED RECOMMENDATIONS
 //==================================================
-
-void showBreakScreen()
+void showAIRecommendation(bool motion, int light)
 {
     display.clearDisplay();
-
     display.setTextColor(SSD1306_WHITE);
     display.setTextSize(1);
+    display.setTextWrap(false);
 
     display.setCursor(0, 0);
-    display.println("Break Time");
+    display.println("AI RECOMMENDATION");
+
+    display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+
+    display.setCursor(0, 18);
+
+    if (light < 30)
+    {
+        display.println("Room is dark.");
+        display.println("Try turning on");
+        display.println("a desk lamp.");
+    }
+    else if (motion)
+    {
+        display.println("Great lighting.");
+        display.println("Keep studying.");
+    }
+    else
+    {
+        display.println("No motion detected.");
+        display.println("Save energy.");
+    }
 
     display.display();
 }
@@ -320,114 +463,130 @@ void showBreakScreen()
 // MAIN UI STATE MACHINE
 //==================================================
 
-void updateUI(bool motion, int light)
+void updateUI(bool motion, int light, ButtonEvent buttonEvent)
 {
     switch (currentScreen)
     {
-        //--------------------------------------------------
-        // CALIBRATION
-        //--------------------------------------------------
-
         case SCREEN_CALIBRATION:
-
             break;
-
-
-        //--------------------------------------------------
-        // GREETING
-        //--------------------------------------------------
 
         case SCREEN_GREETING:
-
             showGreeting();
-
             currentScreen = SCREEN_LOADING;
-
             break;
-
-
-        //--------------------------------------------------
-        // LOADING
-        //--------------------------------------------------
 
         case SCREEN_LOADING:
-
             showLoadingAnimation();
-
             currentScreen = SCREEN_LOGO;
-
             break;
-
-
-        //--------------------------------------------------
-        // LOGO
-        //--------------------------------------------------
 
         case SCREEN_LOGO:
-
             showLogo();
-
-            // Start the idle timer when dashboard begins.
+            sessionStartTime = millis();
             lastMotionTime = millis();
-
             currentScreen = SCREEN_DASHBOARD;
-
             break;
 
-
-        //--------------------------------------------------
-        // DASHBOARD
-        //--------------------------------------------------
-
         case SCREEN_DASHBOARD:
+            showDashboard(motion, light, selectedMode);
 
-            showDashboard(motion, light);
-
-            // Motion means the user is active.
             if (motion)
             {
                 lastMotionTime = millis();
             }
 
-            // Only enter Idle Mode after 10 seconds
-            // without detecting motion.
-            if (!motion &&
-                (millis() - lastMotionTime >= IDLE_TIMEOUT))
+            if (buttonEvent == BUTTON_SHORT_PRESS)
+            {
+                currentScreen = SCREEN_MENU;
+            }
+
+            if (!motion && (millis() - lastMotionTime >= IDLE_TIMEOUT))
             {
                 currentScreen = SCREEN_IDLE;
             }
-
             break;
 
+        case SCREEN_MENU:
+            showModeMenu(selectedMode);
 
-        //--------------------------------------------------
-        // IDLE
-        //--------------------------------------------------
+            if (buttonEvent == BUTTON_SHORT_PRESS)
+            {
+                if (selectedMode == SESSION_FOCUS)
+                {
+                    selectedMode = SESSION_BREAK;
+                }
+                else if (selectedMode == SESSION_BREAK)
+                {
+                    selectedMode = SESSION_AI;
+                }
+                else
+                {
+                    selectedMode = SESSION_FOCUS;
+                }
+            }
+
+            if (buttonEvent == BUTTON_LONG_PRESS)
+            {
+                sessionStartTime = millis();
+
+                if (selectedMode == SESSION_FOCUS)
+                {
+                    currentScreen = SCREEN_FOCUS;
+                }
+                else if (selectedMode == SESSION_BREAK)
+                {
+                    currentScreen = SCREEN_BREAK;
+                }
+                else
+                {
+                    currentScreen = SCREEN_AI_RECOMMENDATION;
+                }
+            }
+            break;
+
+        case SCREEN_FOCUS:
+            showFocusScreen(
+                (millis() - sessionStartTime) / 1000,
+                motion,
+                light
+            );
+
+            if (buttonEvent == BUTTON_SHORT_PRESS)
+            {
+                currentScreen = SCREEN_DASHBOARD;
+            }
+            break;
+
+        case SCREEN_BREAK:
+            showBreakScreen(
+                (millis() - sessionStartTime) / 1000,
+                motion,
+                light
+            );
+
+            if (buttonEvent == BUTTON_SHORT_PRESS)
+            {
+                currentScreen = SCREEN_DASHBOARD;
+            }
+            break;
+
+        case SCREEN_AI_RECOMMENDATION:
+            showAIRecommendation(motion, light);
+
+            if (buttonEvent == BUTTON_SHORT_PRESS)
+            {
+                currentScreen = SCREEN_DASHBOARD;
+            }
+            break;
 
         case SCREEN_IDLE:
-
             showIdleScreen();
 
-            // If the user starts moving again,
-            // return to the dashboard.
             if (motion)
             {
                 lastMotionTime = millis();
-
                 currentScreen = SCREEN_DASHBOARD;
             }
-
-            break;
-
-
-        //--------------------------------------------------
-        // BREAK
-        //--------------------------------------------------
-
-        case SCREEN_BREAK:
-
-            showBreakScreen();
-
             break;
     }
 }
