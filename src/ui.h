@@ -2,6 +2,7 @@
 #define UI_H
 
 #include <Arduino.h>
+#include "button.h"
 
 //==================================================
 // SCREEN STATES
@@ -28,6 +29,8 @@ enum SessionMode
     SESSION_AI
 };
 
+extern SessionMode currentSession;
+
 //==================================================
 // INITIALIZATION
 //==================================================
@@ -38,7 +41,11 @@ void initUI();
 // UI STATE MACHINE
 //==================================================
 
-void updateUI(bool motion, int light);
+void updateUI(
+    bool motion,
+    int light,
+    ButtonEvent buttonEvent
+);
 
 //==================================================
 // INDIVIDUAL SCREENS

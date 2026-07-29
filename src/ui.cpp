@@ -1,7 +1,7 @@
 #include "ui.h"
 #include "config.h"
-#include "button.h
-#include "ldr.h
+#include "button.h"
+#include "ldr.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -11,13 +11,10 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
-static Screen currentScreen = SCREEN_GREETING;
 static SessionMode selectedMode = SESSION_FOCUS;
 
 static unsigned long lastMotionTime = 0;
 static unsigned long sessionStartTime = 0;
-
-static const unsigned long IDLE_TIMEOUT = 10000;
 
 //==================================================
 // OLED OBJECT
@@ -37,12 +34,12 @@ Adafruit_SSD1306 display(
 // The current screen belongs to the UI system.
 static Screen currentScreen = SCREEN_GREETING;
 
-// Time when motion was last detected.
-static unsigned long lastMotionTime = 0;
 
 // How long the user can remain motionless
 // before entering Idle Mode.
 static const unsigned long IDLE_TIMEOUT = 10000;
+
+SessionMode currentSession = SESSION_FOCUS;
 
 //==================================================
 // INITIALIZE UI
@@ -333,7 +330,7 @@ void showFocusScreen(unsigned long elapsedSeconds, bool motion, int light)
 // DASHBOARD
 //==================================================
 
-void showDashboard(bool motion, int light)
+void showDashboard(bool motion, int light, SessionMode selectedMode)
 {
     display.clearDisplay();
 

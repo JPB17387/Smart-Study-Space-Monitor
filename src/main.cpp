@@ -29,17 +29,21 @@ void loop()
     bool motion = isMotionDetected();
     int light = getLightPercent();
 
-    updateUI(motion, light);
+    ButtonEvent buttonEvent = updateButton();
 
-    bool buttonPressed = isButtonPressed();
-
-    if (buttonPressed && !lastButtonState)
+    if (buttonEvent == BUTTON_SHORT_PRESS)
     {
         beep(100);
-        Serial.println("Button pressed!");
+        Serial.println("Short Press");
     }
 
-    lastButtonState = buttonPressed;
+    if (buttonEvent == BUTTON_LONG_PRESS)
+    {
+        beep(250);
+        Serial.println("Long Press");
+    }
+
+    updateUI(motion, light, buttonEvent);
 
     delay(100);
 }
