@@ -3,6 +3,6 @@
 <br>
 </p>
 
-<h1 align="center">The Creator/Author</h1>
+<h1 align="center">Creator/Author</h1>
 
 <p></p>

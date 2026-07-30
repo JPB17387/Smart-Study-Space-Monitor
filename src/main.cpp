@@ -1,49 +1,96 @@
 #include <Arduino.h>
 
-#include "ui.h"
 #include "pir.h"
 #include "ldr.h"
 #include "button.h"
 #include "buzzer.h"
+#include "ui.h"
 
-bool lastButtonState = false;
+//==================================================
+// SETUP
+//==================================================
 
 void setup()
 {
     Serial.begin(9600);
 
+    // Initialize hardware drivers
     initPIR();
     initLDR();
     initButton();
     initBuzzer();
-    initUI();
+
+
+    // Display boot animation
     showBootAnimation();
 
-    Serial.println("Smart Study AI started.");
+    // Initialize OLED UI
+    initUI();
+
+    Serial.println("==================================");
+    Serial.println(" Smart Study AI Platform Started");
+    Serial.println("==================================");
 }
+
+//==================================================
+// MAIN LOOP
+//==================================================
 
 void loop()
 {
+    //--------------------------------------------------
+    // Update hardware drivers
+    //--------------------------------------------------
+
     updatePIR();
+
+    //--------------------------------------------------
+    // Read sensor values
+    //--------------------------------------------------
 
     bool motion = isMotionDetected();
     int light = getLightPercent();
 
+    //--------------------------------------------------
+    // Read button events
+    //--------------------------------------------------
+
     ButtonEvent buttonEvent = updateButton();
 
-    if (buttonEvent == BUTTON_SHORT_PRESS)
+    //--------------------------------------------------
+    // Optional feedback
+    //--------------------------------------------------
+
+    switch (buttonEvent)
     {
-        beep(100);
-        Serial.println("Short Press");
+        case BUTTON_SHORT_PRESS:
+            beep(80);
+            Serial.println("Short Press");
+            break;
+
+        case BUTTON_LONG_PRESS:
+            beep(200);
+            Serial.println("Long Press");
+            break;
+
+        case BUTTON_NONE:
+        default:
+            break;
     }
 
-    if (buttonEvent == BUTTON_LONG_PRESS)
-    {
-        beep(250);
-        Serial.println("Long Press");
-    }
+    //--------------------------------------------------
+    // Update UI State Machine
+    //--------------------------------------------------
 
-    updateUI(motion, light, buttonEvent);
+    updateUI(
+        motion,
+        light,
+        buttonEvent
+    );
 
-    delay(100);
+    //--------------------------------------------------
+    // Temporary refresh rate
+    //--------------------------------------------------
+
+    delay(50);
 }

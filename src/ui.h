@@ -10,7 +10,7 @@
 
 enum Screen
 {
-    SCREEN_CALIBRATION,
+    SCREEN_BOOT,
     SCREEN_GREETING,
     SCREEN_LOADING,
     SCREEN_LOGO,
@@ -22,6 +22,10 @@ enum Screen
     SCREEN_IDLE
 };
 
+//==================================================
+// SESSION MODES
+//==================================================
+
 enum SessionMode
 {
     SESSION_FOCUS,
@@ -29,6 +33,7 @@ enum SessionMode
     SESSION_AI
 };
 
+// Current active session
 extern SessionMode currentSession;
 
 //==================================================
@@ -38,7 +43,7 @@ extern SessionMode currentSession;
 void initUI();
 
 //==================================================
-// UI STATE MACHINE
+// MAIN UI STATE MACHINE
 //==================================================
 
 void updateUI(
@@ -48,7 +53,13 @@ void updateUI(
 );
 
 //==================================================
-// INDIVIDUAL SCREENS
+// SCREEN CONTROL
+//==================================================
+
+void setScreen(Screen screen);
+
+//==================================================
+// STARTUP SCREENS
 //==================================================
 
 void showBootAnimation();
@@ -56,29 +67,37 @@ void showGreeting();
 void showLoadingAnimation();
 void showLogo();
 
+//==================================================
+// MAIN SCREENS
+//==================================================
+
 void showDashboard(
     bool motion,
     int light,
-    SessionMode selectedMode
+    SessionMode mode
 );
+
+void showMenu(
+    SessionMode mode
+);
+
 void showFocusScreen(
-    unsigned long elapsedSeconds, 
-    bool motion, 
+    unsigned long elapsedSeconds,
+    bool motion,
+    int light
+);
+
+void showBreakScreen(
+    unsigned long elapsedSeconds,
+    bool motion,
     int light
 );
 
 void showAIRecommendation(
-    bool motion, 
+    bool motion,
     int light
 );
 
 void showIdleScreen();
-void showBreakScreen();
-
-//==================================================
-// SCREEN CONTROL
-//==================================================
-
-void setScreen(Screen screen);
 
 #endif
