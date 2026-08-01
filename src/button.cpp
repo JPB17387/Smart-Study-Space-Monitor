@@ -53,30 +53,20 @@ void initButton()
 
 ButtonEvent updateButton()
 {
-    if (buttonPressed(
-            BUTTON_UP_PIN,
-            lastUp,
-            lastDebounceUp))
+    if (digitalRead(BUTTON_UP_PIN) == LOW)
     {
         return BUTTON_UP;
     }
 
-    if (buttonPressed(
-            BUTTON_DOWN_PIN,
-            lastDown,
-            lastDebounceDown))
+    if (digitalRead(BUTTON_DOWN_PIN) == LOW)
     {
         return BUTTON_DOWN;
     }
 
-    if (buttonPressed(
-            BUTTON_SELECT_PIN,
-            lastSelect,
-            lastDebounceSelect))
+    if (digitalRead(BUTTON_SELECT_PIN) == LOW)
     {
         return BUTTON_SELECT;
     }
 
     return BUTTON_NONE;
 }
-
