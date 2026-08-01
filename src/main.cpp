@@ -5,11 +5,10 @@
 #include "timer.h"
 #include "button.h"
 #include "buzzer.h"
-#include "config.h"
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Drivers
     initPIR();
@@ -35,24 +34,29 @@ void loop()
 
     ButtonEvent button = updateButton();
 
+    // Temporary test
     switch (button)
     {
-    case BUTTON_UP:
-        Serial.println("UP");
-        beep(30);
-        break;
+        case BUTTON_UP:
+            Serial.println("UP");
+            break;
 
-    case BUTTON_DOWN:
-        Serial.println("DOWN");
-        beep(30);
-        break;
+        case BUTTON_DOWN:
+            Serial.println("DOWN");
+            break;
 
-    case BUTTON_SELECT:
-        Serial.println("SELECT");
-        beep(80);
-        break;
+        case BUTTON_SELECT:
+            Serial.println("SELECT");
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
+
+    updateUI(
+        motion,
+        light,
+        elapsed,
+        button
+    );
 }
