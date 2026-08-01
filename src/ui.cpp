@@ -20,6 +20,12 @@ Adafruit_SSD1306 display(
 );
 
 //==================================================
+// UI State
+//==================================================
+
+static Screen currentScreen = SCREEN_BOOT;
+
+//==================================================
 // Private Functions
 //==================================================
 
@@ -58,10 +64,12 @@ void initUI()
 
 void runStartupSequence()
 {
-    showBootAnimation();
-    showGreeting();
-    showLoadingAnimation();
-    showLogo();
+    setScreen(SCREEN_BOOT);
+
+    while (getCurrentScreen() != SCREEN_DASHBOARD)
+    {
+        updateUI(false, 0, 0, BUTTON_NONE);
+    }
 }
 
 //==================================================
@@ -75,11 +83,14 @@ static void showBootAnimation()
     display.setTextColor(SSD1306_WHITE);
     display.setTextSize(1);
 
-    display.setCursor(20, 6);
+    display.setCursor(20, 7);
     display.println("SMART STUDY AI");
 
-    display.setCursor(42, 20);
+    display.setCursor(53, 18);
     display.println("BOOT");
+
+    display.setCursor(11, 64);
+    display.print("Initializing......");
 
     display.drawRect(14, 40, 100, 10, SSD1306_WHITE);
 
@@ -148,7 +159,7 @@ static void showLoadingAnimation()
         delay(200);
     }
 
-    display.print(" done");
+    display.print("done");
     display.display();
 
     delay(1500);
@@ -180,3 +191,113 @@ static void showLogo()
 
     delay(5000);
 }
+
+//==================================================
+// Dashboard
+//==================================================
+
+static void showDashboard(
+    bool motion,
+    int light,
+    unsigned long elapsedSeconds)
+{
+    display.clearDisplay();
+
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+
+    display.setCursor(0,0);
+    display.println("Smart Study AI");
+
+    display.drawLine(0,10,127,10,SSD1306_WHITE);
+
+    display.setCursor(0,18);
+    display.print("Motion : ");
+    display.println(motion ? "YES" : "NO");
+
+    display.setCursor(0,30);
+    display.print("Light  : ");
+    display.print(light);
+    display.println("%");
+
+    display.setCursor(0,42);
+    display.print("Mode   : FOCUS");
+
+    unsigned long minutes = elapsedSeconds / 60;
+    unsigned long seconds = elapsedSeconds % 60;
+
+    display.setCursor(0,54);
+    display.print("Time   : ");
+
+    if(minutes < 10)
+        display.print('0');
+
+    display.print(minutes);
+    display.print(':');
+
+    if(seconds < 10)
+        display.print('0');
+
+    display.print(seconds);
+
+    display.display();
+}
+//==================================================
+// Screen Manager
+//==================================================
+
+void setScreen(Screen screen)
+{
+    currentScreen = screen;
+}
+
+Screen getCurrentScreen()
+{
+    return currentScreen;
+}
+
+void updateUI(
+    bool motion,
+    int light,
+    unsigned long elapsedSeconds,
+    ButtonEvent button)
+    {
+        (void)button;
+
+        switch (currentScreen)
+        {
+            case SCREEN_BOOT:
+                showBootAnimation();
+                currentScreen = SCREEN_GREETING;
+                break;
+
+            case SCREEN_GREETING:
+                showGreeting();
+                currentScreen = SCREEN_LOADING;
+                break;
+
+            case SCREEN_LOADING:
+                showLoadingAnimation();
+                currentScreen = SCREEN_LOGO;
+                break;
+
+            case SCREEN_LOGO:
+                showLogo();
+                currentScreen = SCREEN_DASHBOARD;
+                break;
+
+            case SCREEN_DASHBOARD:
+            showDashboard(
+                motion,
+                light,
+                elapsedSeconds
+            );
+            break;
+
+            case SCREEN_IDLE:
+            case SCREEN_BREAK:
+            case SCREEN_MENU:
+            case SCREEN_AI:
+                break;
+        }
+    }

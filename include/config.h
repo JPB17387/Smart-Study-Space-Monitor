@@ -19,16 +19,18 @@
 // Pins
 //==================================================
 
-#define PIR_PIN        2
+#define PIR_PIN            2
 
-// LDR (Phase 4)
-#define LDR_PIN        A0
+// LDR 
+#define LDR_PIN            A0
 
-// Buzzer (Phase 5)
-#define BUZZER_PIN     8
+// Buzzer 
+#define BUZZER_PIN         8
 
-// Button (Phase 5)
-#define BUTTON_PIN     7
+// Button 
+#define BUTTON_UP_PIN      6
+#define BUTTON_SELECT_PIN  7
+#define BUTTON_DOWN_PIN    5
 
 //==================================================
 // Timing

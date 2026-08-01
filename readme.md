@@ -57,8 +57,11 @@ We'll use the analog value.
 #### Push Button Wiring
 
 ```
-GND → GND
-VCC → D7
+| Component                  | Arduino Pin |
+| -------------------------- | ----------- |
+| Push Button (DOWN)         | D5          |
+| Push Button (UP)           | D6          |
+| Push Button (SELECT)       | D7          |
 ```
 
 #### Buzzer Wiring
@@ -100,10 +103,11 @@ A0 → LDR AO
 ```
 | Component                  | Arduino Pin |
 | -------------------------- | ----------- |
-| PIR Sensor                 | **D2**      |
-| Push Button                | D3          |
+| PIR Sensor                 | D2          |
 | Active Buzzer              | D4          |
-| Status LED (optional)      | D5          |
+| Push Button (DOWN)         | D5          |
+| Push Button (UP)           | D6          |
+| Push Button (SELECT)       | D7          |
 | LDR Sensor (analog output) | A0          |
 | OLED Display (I2C SDA)     | A4          |
 | OLED Display (I2C SCL)     | A5          |

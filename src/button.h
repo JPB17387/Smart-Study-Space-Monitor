@@ -3,14 +3,27 @@
 
 #include <Arduino.h>
 
+//==================================================
+// Button Events
+//==================================================
+
 enum ButtonEvent
 {
     BUTTON_NONE,
-    BUTTON_SHORT_PRESS,
-    BUTTON_LONG_PRESS
+
+    BUTTON_UP,
+
+    BUTTON_DOWN,
+
+    BUTTON_SELECT
 };
 
+//==================================================
+// Public API
+//==================================================
+
 void initButton();
+
 ButtonEvent updateButton();
 
 #endif
