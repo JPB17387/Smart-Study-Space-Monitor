@@ -50,6 +50,7 @@ static void showGreeting();
 static void showLoadingAnimation();
 static void showLogo();
 static void showMainMenu();
+static bool menuNeedsRedraw = true;
 
 //==================================================
 // Initialize OLED
@@ -303,12 +304,18 @@ static void showDashboard(
 void setScreen(Screen screen)
 {
     currentScreen = screen;
+
+    menuNeedsRedraw = true;
 }
 
 Screen getCurrentScreen()
 {
     return currentScreen;
 }
+
+//==================================================
+// Update UI
+//==================================================
 
 void updateUI(
     bool motion,
@@ -340,9 +347,42 @@ void updateUI(
                 currentScreen = SCREEN_DASHBOARD;
                 break;
 
-            case SCREEN_MENU:
-            showMainMenu();
-            break;
+            case SCREEN_MENU:   
+            {
+                switch (button)
+                {
+                    case BUTTON_UP:
+
+                        if (selectedMenu > 0)
+                        {
+                            selectedMenu--;
+                            menuNeedsRedraw = true;
+                        }
+
+                        break;
+
+                    case BUTTON_DOWN:
+
+                        if (selectedMenu < MENU_COUNT - 1)
+                        {
+                            selectedMenu++;
+                            menuNeedsRedraw = true;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if (menuNeedsRedraw)
+                {
+                    showMainMenu();
+                    menuNeedsRedraw = false;
+                }
+
+                break;
+            }
 
             case SCREEN_DASHBOARD:
             showDashboard(
