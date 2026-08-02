@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "config.h"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -56,6 +57,8 @@ static Screen currentScreen = SCREEN_BOOT;
 static bool oledInitialized = false;
 
 static bool screenNeedsRedraw = true;
+
+static unsigned long lastDashboardRefresh = 0;
 
 //==================================================
 // Initialize OLED
@@ -264,10 +267,14 @@ static void showMainMenu()
 // Dashboard
 //==================================================
 
-static void showDashboard(
-    bool motion,
-    int light,
-    unsigned long elapsedSeconds)
+/**
+ * @brief Draws the dashboard content that does not change during a session.
+ *
+ * The previous dashboard redraw cleared the complete OLED buffer every loop.
+ * Static labels are now drawn once when the dashboard is entered.
+ * The OLED layout and displayed field positions are unchanged.
+ */
+static void drawDashboardStatic()
 {
     display.clearDisplay();
 
@@ -281,21 +288,44 @@ static void showDashboard(
 
     display.setCursor(0,18);
     display.print("Motion : ");
-    display.println(motion ? "YES" : "NO");
 
     display.setCursor(0,30);
     display.print("Light  : ");
-    display.print(light);
-    display.println("%");
 
     display.setCursor(0,42);
-    display.print("Mode   : FOCUS");
+    display.print("Rec.   : Studying...");
+
+    display.setCursor(0,54);
+    display.print("Time   : ");
+
+}
+
+/**
+ * @brief Updates the live dashboard values at the configured refresh interval.
+ *
+ * This clears only the changing value areas to reduce OLED flicker.
+ * Timer, PIR, and LDR values continue to use the existing module data.
+ */
+static void updateDashboardValues(
+    bool motion,
+    int light,
+    unsigned long elapsedSeconds)
+{
+    display.fillRect(54, 18, 30, 8, SSD1306_BLACK);
+    display.fillRect(54, 30, 30, 8, SSD1306_BLACK);
+    display.fillRect(54, 54, 42, 8, SSD1306_BLACK);
+
+    display.setCursor(54,18);
+    display.println(motion ? "YES" : "NO");
+
+    display.setCursor(54,30);
+    display.print(light);
+    display.println("%");
 
     unsigned long minutes = elapsedSeconds / 60;
     unsigned long seconds = elapsedSeconds % 60;
 
-    display.setCursor(0,54);
-    display.print("Time   : ");
+    display.setCursor(54,54);
 
     if(minutes < 10)
         display.print('0');
@@ -309,6 +339,41 @@ static void showDashboard(
     display.print(seconds);
 
     display.display();
+}
+
+/**
+ * @brief Renders live study information on the Dashboard.
+ *
+ * Static dashboard content is drawn once per screen entry. Dynamic timer,
+ * PIR, and LDR values refresh using DISPLAY_REFRESH_INTERVAL.
+ * The screen layout and public UI API are unchanged.
+ *
+ * @param motion Current PIR motion state.
+ * @param light Current ambient light percentage.
+ * @param elapsedSeconds Current study session elapsed time.
+ */
+static void showDashboard(
+    bool motion,
+    int light,
+    unsigned long elapsedSeconds)
+{
+    if (screenNeedsRedraw)
+    {
+        drawDashboardStatic();
+        screenNeedsRedraw = false;
+        lastDashboardRefresh = 0;
+    }
+
+    if (millis() - lastDashboardRefresh >= DISPLAY_REFRESH_INTERVAL)
+    {
+        updateDashboardValues(
+            motion,
+            light,
+            elapsedSeconds
+        );
+
+        lastDashboardRefresh = millis();
+    }
 }
 //==================================================
 // Screen Manager
