@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+// Use include guard
+#pragma once
 
 //==================================================
 // Project Information
@@ -39,4 +39,7 @@
 #define DISPLAY_REFRESH_INTERVAL 200
 #define PIR_CALIBRATION_TIME     30000
 
-#endif
+// Session idle timeout in seconds before pausing the study timer.
+#define SESSION_IDLE_TIMEOUT     60
+
+

@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "config.h"
+#include "session.h"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -23,9 +24,6 @@ static uint8_t selectedMenu = 0;
 // OLED Configuration
 //==================================================
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_ADDRESS 0x3C
 
 Adafruit_SSD1306 display(
     SCREEN_WIDTH,
@@ -66,7 +64,7 @@ static unsigned long lastDashboardRefresh = 0;
 
 void initUI()
     {
-        Wire.begin();
+        //Wire.begin();
 
         if (!display.begin(
             SSD1306_SWITCHCAPVCC,
@@ -293,7 +291,7 @@ static void drawDashboardStatic()
     display.print("Light  : ");
 
     display.setCursor(0,42);
-    display.print("Rec.   : Studying...");
+    display.print("Rec.   : ");
 
     display.setCursor(0,54);
     display.print("Time   : ");
@@ -304,7 +302,7 @@ static void drawDashboardStatic()
  * @brief Updates the live dashboard values at the configured refresh interval.
  *
  * This clears only the changing value areas to reduce OLED flicker.
- * Timer, PIR, and LDR values continue to use the existing module data.
+ * Timer, PIR, LDR, and session status continue to use existing module data.
  */
 static void updateDashboardValues(
     bool motion,
@@ -313,6 +311,7 @@ static void updateDashboardValues(
 {
     display.fillRect(54, 18, 30, 8, SSD1306_BLACK);
     display.fillRect(54, 30, 30, 8, SSD1306_BLACK);
+    display.fillRect(54, 42, 66, 8, SSD1306_BLACK);
     display.fillRect(54, 54, 42, 8, SSD1306_BLACK);
 
     display.setCursor(54,18);
@@ -321,6 +320,23 @@ static void updateDashboardValues(
     display.setCursor(54,30);
     display.print(light);
     display.println("%");
+
+    display.setCursor(54,42);
+
+    switch (getSessionState())
+    {
+        case SESSION_FOCUS:
+            display.print("Studying...");
+            break;
+
+        case SESSION_IDLE:
+            display.print("Idle");
+            break;
+
+        case SESSION_BREAK:
+            display.print("Break");
+            break;
+    }
 
     unsigned long minutes = elapsedSeconds / 60;
     unsigned long seconds = elapsedSeconds % 60;
