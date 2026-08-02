@@ -8,7 +8,7 @@
 
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Drivers
     initPIR();
@@ -26,37 +26,19 @@ void setup()
 void loop()
 {
     updatePIR();
-    updateTimer();
+
+    int light = getLightPercent();
 
     bool motion = isMotionDetected();
-    int light = getLightPercent();
-    unsigned long elapsed = getElapsedSeconds();
+
+    updateTimer();
 
     ButtonEvent button = updateButton();
-
-    // Temporary test
-    switch (button)
-    {
-        case BUTTON_UP:
-            Serial.println("UP");
-            break;
-
-        case BUTTON_DOWN:
-            Serial.println("DOWN");
-            break;
-
-        case BUTTON_SELECT:
-            Serial.println("SELECT");
-            break;
-
-        default:
-            break;
-    }
 
     updateUI(
         motion,
         light,
-        elapsed,
+        getElapsedSeconds(),
         button
     );
 }

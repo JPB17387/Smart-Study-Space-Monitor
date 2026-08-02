@@ -1,46 +1,43 @@
-#include "button.h"
+#include <Arduino.h>
+
 #include "config.h"
-
-static bool lastUp = HIGH;
-static bool lastDown = HIGH;
-static bool lastSelect = HIGH;
-
-static unsigned long lastDebounceUp = 0;
-static unsigned long lastDebounceDown = 0;
-static unsigned long lastDebounceSelect = 0;
+#include "button.h"
 
 const unsigned long DEBOUNCE_TIME = 40;
 
-//==================================================
-// Helper
-//==================================================
-
-static bool buttonPressed(
-    uint8_t pin,
-    bool &lastState,
-    unsigned long &lastDebounce)
+struct ButtonState
 {
-    bool reading = digitalRead(pin);
+    uint8_t pin;
 
-    if (reading != lastState)
-    {
-        lastDebounce = millis();
-    }
+    bool lastReading;
+    bool stableState;
 
-    if ((millis() - lastDebounce) > DEBOUNCE_TIME)
-    {
-        if (lastState == HIGH && reading == LOW)
-        {
-            lastState = reading;
-            return true;
-        }
-    }
+    unsigned long lastChange;
+};
 
-    lastState = reading;
-    return false;
-}
+static ButtonState upButton =
+{
+    BUTTON_UP_PIN,
+    HIGH,
+    HIGH,
+    0
+};
 
-//==================================================
+static ButtonState downButton =
+{
+    BUTTON_DOWN_PIN,
+    HIGH,
+    HIGH,
+    0
+};
+
+static ButtonState selectButton =
+{
+    BUTTON_SELECT_PIN,
+    HIGH,
+    HIGH,
+    0
+};
 
 void initButton()
 {
@@ -49,21 +46,45 @@ void initButton()
     pinMode(BUTTON_SELECT_PIN, INPUT_PULLUP);
 }
 
-//==================================================
+static bool buttonPressed(ButtonState &button)
+{
+    bool reading = digitalRead(button.pin);
+
+    if (reading != button.lastReading)
+    {
+        button.lastChange = millis();
+        button.lastReading = reading;
+    }
+
+    if ((millis() - button.lastChange) >= DEBOUNCE_TIME)
+    {
+        if (button.stableState != reading)
+        {
+            button.stableState = reading;
+
+            if (reading == LOW)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 ButtonEvent updateButton()
 {
-    if (digitalRead(BUTTON_UP_PIN) == LOW)
+    if (buttonPressed(upButton))
     {
         return BUTTON_UP;
     }
 
-    if (digitalRead(BUTTON_DOWN_PIN) == LOW)
+    if (buttonPressed(downButton))
     {
         return BUTTON_DOWN;
     }
 
-    if (digitalRead(BUTTON_SELECT_PIN) == LOW)
+    if (buttonPressed(selectButton))
     {
         return BUTTON_SELECT;
     }

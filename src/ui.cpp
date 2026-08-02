@@ -5,6 +5,22 @@
 #include <Adafruit_SSD1306.h>
 
 //==================================================
+// MENU
+//==================================================
+
+static const char* menuItems[] =
+{
+    "Focus Session",
+    "AI Assistant",
+    "Break Mode"
+};
+
+static const uint8_t MENU_COUNT =
+    sizeof(menuItems) / sizeof(menuItems[0]);
+
+static uint8_t selectedMenu = 0;
+
+//==================================================
 // OLED Configuration
 //==================================================
 
@@ -33,6 +49,7 @@ static void showBootAnimation();
 static void showGreeting();
 static void showLoadingAnimation();
 static void showLogo();
+static void showMainMenu();
 
 //==================================================
 // Initialize OLED
@@ -64,12 +81,15 @@ void initUI()
 
 void runStartupSequence()
 {
-    setScreen(SCREEN_BOOT);
+    showBootAnimation();
 
-    while (getCurrentScreen() != SCREEN_DASHBOARD)
-    {
-        updateUI(false, 0, 0, BUTTON_NONE);
-    }
+    showGreeting();
+
+    showLoadingAnimation();
+
+    showLogo();
+
+    setScreen(SCREEN_MENU);
 }
 
 //==================================================
@@ -193,6 +213,40 @@ static void showLogo()
 }
 
 //==================================================
+// Main Menu
+//==================================================
+static void showMainMenu()
+{
+    display.clearDisplay();
+
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+
+    display.setCursor(20, 0);
+    display.println("Smart Study AI");
+
+    display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+
+    for (uint8_t i = 0; i < MENU_COUNT; i++)
+    {
+        display.setCursor(5, 18 + (i * 14));
+
+        if (i == selectedMenu)
+        {
+            display.print("> ");
+        }
+        else
+        {
+            display.print("  ");
+        }
+
+        display.print(menuItems[i]);
+    }
+
+    display.display();
+}
+
+//==================================================
 // Dashboard
 //==================================================
 
@@ -286,6 +340,10 @@ void updateUI(
                 currentScreen = SCREEN_DASHBOARD;
                 break;
 
+            case SCREEN_MENU:
+            showMainMenu();
+            break;
+
             case SCREEN_DASHBOARD:
             showDashboard(
                 motion,
@@ -296,7 +354,6 @@ void updateUI(
 
             case SCREEN_IDLE:
             case SCREEN_BREAK:
-            case SCREEN_MENU:
             case SCREEN_AI:
                 break;
         }
