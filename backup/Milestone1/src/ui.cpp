@@ -15,6 +15,9 @@ static const char* menuItems[] =
     "Break Mode"
 };
 
+static const uint8_t MENU_COUNT =
+    sizeof(menuItems) / sizeof(menuItems[0]);
+
 static uint8_t selectedMenu = 0;
 
 
@@ -34,6 +37,12 @@ Adafruit_SSD1306 display(
 );
 
 //==================================================
+// UI State
+//==================================================
+
+static Screen currentScreen = SCREEN_BOOT;
+
+//==================================================
 // Private Functions
 //==================================================
 
@@ -48,10 +57,9 @@ static bool menuNeedsRedraw = true;
 // Global Variables
 //==================================================
 
-// The previous implementation declared UI state and menu selection twice.
-// Keeping this single screen state removes duplicate global definitions.
-// Screen order and navigation behavior are unchanged.
 static Screen currentScreen = SCREEN_BOOT;
+
+static MenuItem selectedMenu = MENU_FOCUS;
 
 static bool oledInitialized = false;
 
