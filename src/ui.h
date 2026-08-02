@@ -5,7 +5,7 @@
 #include "button.h"
 
 //==================================================
-// Screen States
+// SCREEN STATES
 //==================================================
 
 enum Screen
@@ -14,15 +14,27 @@ enum Screen
     SCREEN_GREETING,
     SCREEN_LOADING,
     SCREEN_LOGO,
-    SCREEN_DASHBOARD,
-    SCREEN_IDLE,
-    SCREEN_BREAK,
     SCREEN_MENU,
-    SCREEN_AI
+    SCREEN_DASHBOARD,
+    SCREEN_AI,
+    SCREEN_BREAK,
+    SCREEN_IDLE
 };
 
 //==================================================
-// Public Functions
+// MENU ITEMS
+//==================================================
+
+enum MenuItem
+{
+    MENU_FOCUS,
+    MENU_AI,
+    MENU_BREAK,
+    MENU_COUNT
+};
+
+//==================================================
+// PUBLIC FUNCTIONS
 //==================================================
 
 void initUI();

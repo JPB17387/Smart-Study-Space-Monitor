@@ -20,6 +20,7 @@ static const uint8_t MENU_COUNT =
 
 static uint8_t selectedMenu = 0;
 
+
 //==================================================
 // OLED Configuration
 //==================================================
@@ -53,45 +54,65 @@ static void showMainMenu();
 static bool menuNeedsRedraw = true;
 
 //==================================================
+// Global Variables
+//==================================================
+
+static Screen currentScreen = SCREEN_BOOT;
+
+static MenuItem selectedMenu = MENU_FOCUS;
+
+static bool oledInitialized = false;
+
+static bool screenNeedsRedraw = true;
+
+//==================================================
 // Initialize OLED
 //==================================================
 
 void initUI()
-{
-    if (!display.begin(
+    {
+        Wire.begin();
+
+        if (!display.begin(
             SSD1306_SWITCHCAPVCC,
             OLED_ADDRESS))
-    {
-        Serial.println("OLED init failed!");
+        {
+            Serial.println("OLED initialization failed.");
 
-        while (1);
+            while (true);
+        }
+
+        Serial.println("OLED initialized successfully.");
+
+        display.clearDisplay();
+
+        display.setTextColor(SSD1306_WHITE);
+
+        display.setTextSize(1);
+
+        display.setTextWrap(false);
+
+        display.display();
+
+        oledInitialized = true;
     }
 
-    display.clearDisplay();
-    display.setTextColor(SSD1306_WHITE);
-    display.setTextWrap(false);
-    display.setTextSize(1);
-    display.display();
+    //==================================================
+    // Startup Sequence
+    //==================================================
 
-    Serial.println("OLED initialized successfully.");
-}
+    void runStartupSequence()
+    {
+        showBootAnimation();
 
-//==================================================
-// Startup Sequence
-//==================================================
+        showGreeting();
 
-void runStartupSequence()
-{
-    showBootAnimation();
+        showLoadingAnimation();
 
-    showGreeting();
+        showLogo();
 
-    showLoadingAnimation();
-
-    showLogo();
-
-    setScreen(SCREEN_MENU);
-}
+        setScreen(SCREEN_MENU);
+    }
 
 //==================================================
 // Boot Animation
@@ -303,9 +324,11 @@ static void showDashboard(
 
 void setScreen(Screen screen)
 {
-    currentScreen = screen;
-
-    menuNeedsRedraw = true;
+    if (currentScreen != screen)
+    {
+        currentScreen = screen;
+        screenNeedsRedraw = true;
+    }
 }
 
 Screen getCurrentScreen()
@@ -370,9 +393,28 @@ void updateUI(
                         }
 
                         break;
+                        case BUTTON_SELECT:
+                        {
+                            switch (selectedMenu)
+                            {
+                                case MENU_FOCUS:
+                                    setScreen(SCREEN_DASHBOARD);
+                                    break;
+
+                                case MENU_AI:
+                                    setScreen(SCREEN_AI);
+                                    break;
+
+                                case MENU_BREAK:
+                                    setScreen(SCREEN_BREAK);
+                                    break;
+                            }
+
+                            break;
+                        }
 
                     default:
-                        break;
+                    break;
                 }
 
                 if (menuNeedsRedraw)
@@ -384,17 +426,44 @@ void updateUI(
                 break;
             }
 
+            case SCREEN_AI:
+            {
+                if(button == BUTTON_SELECT)
+                {
+                    setScreen(SCREEN_MENU);
+                    menuNeedsRedraw = true;
+                }
+
+                break;
+            }
+
+            case SCREEN_BREAK:
+            {
+                if(button == BUTTON_SELECT)
+                {
+                    setScreen(SCREEN_MENU);
+                    menuNeedsRedraw = true;
+                }
+
+                break;
+            }
+
             case SCREEN_DASHBOARD:
             showDashboard(
                 motion,
                 light,
                 elapsedSeconds
             );
+
+            if(button == BUTTON_SELECT)
+            {
+                setScreen(SCREEN_MENU);
+                menuNeedsRedraw = true;
+            }
+
             break;
 
             case SCREEN_IDLE:
-            case SCREEN_BREAK:
-            case SCREEN_AI:
                 break;
         }
     }
