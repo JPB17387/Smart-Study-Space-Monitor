@@ -17,18 +17,13 @@ void setup()
 {
     Serial.begin(9600);
 
-    // Drivers
     initPIR();
     initLDR();
     initButton();
     initBuzzer();
     initTimer();
     initSession();
-    // UI
     initUI();
-
-    // Startup
-    runStartupSequence();
 }
 
 /**

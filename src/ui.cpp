@@ -10,13 +10,6 @@
 // MENU
 //==================================================
 
-static const char* menuItems[] =
-{
-    "Focus Session",
-    "AI Assistant",
-    "Break Mode"
-};
-
 static uint8_t selectedMenu = 0;
 
 
@@ -41,6 +34,18 @@ static void showGreeting();
 static void showLoadingAnimation();
 static void showLogo();
 static void showMainMenu();
+
+/**
+ * @brief Prints an existing menu label from program memory.
+ *
+ * Normal OLED string literals occupied AVR SRAM before display.begin()
+ * allocated the SSD1306 framebuffer. Flash-resident text preserves the
+ * menu labels, order, and rendering behavior while leaving safe RAM.
+ *
+ * @param index Existing menu item index.
+ */
+static void showMenuItem(uint8_t index);
+
 static bool menuNeedsRedraw = true;
 
 //==================================================
@@ -70,12 +75,12 @@ void initUI()
             SSD1306_SWITCHCAPVCC,
             OLED_ADDRESS))
         {
-            Serial.println("OLED initialization failed.");
+            Serial.println(F("OLED initialization failed."));
 
             while (true);
         }
 
-        Serial.println("OLED initialized successfully.");
+        Serial.println(F("OLED initialized successfully."));
 
         display.clearDisplay();
 
@@ -119,13 +124,13 @@ static void showBootAnimation()
     display.setTextSize(1);
 
     display.setCursor(20, 7);
-    display.println("SMART STUDY AI");
+    display.println(F("SMART STUDY AI"));
 
     display.setCursor(53, 18);
-    display.println("BOOT");
+    display.println(F("BOOT"));
 
     display.setCursor(11, 64);
-    display.print("Initializing......");
+    display.print(F("Initializing......"));
 
     display.drawRect(14, 40, 100, 10, SSD1306_WHITE);
 
@@ -154,11 +159,11 @@ static void showGreeting()
 
     display.setTextSize(2);
     display.setCursor(47, 17);
-    display.print("Hi!");
+    display.print(F("Hi!"));
 
     display.setTextSize(1);
     display.setCursor(23, 39);
-    display.print("Sir, Jhon Paul");
+    display.print(F("Sir, Jhon Paul"));
 
     display.display();
 
@@ -176,17 +181,17 @@ static void showLoadingAnimation()
         display.clearDisplay();
 
         display.setCursor(4, 5);
-        display.print("Hello Sir Jhon Paul");
+        display.print(F("Hello Sir Jhon Paul"));
 
         display.setCursor(2, 28);
-        display.print("WELCOME BACK ON TRACK");
+        display.print(F("WELCOME BACK ON TRACK"));
 
         display.setCursor(4, 52);
-        display.print("Loading");
+        display.print(F("Loading"));
 
         for (int i = 0; i < dots; i++)
         {
-            display.print(".");
+            display.print(F("."));
         }
 
         display.display();
@@ -194,7 +199,7 @@ static void showLoadingAnimation()
         delay(200);
     }
 
-    display.print("done");
+    display.print(F("done"));
     display.display();
 
     delay(1500);
@@ -217,10 +222,10 @@ static void showLogo()
     );
 
     display.setCursor(21, 22);
-    display.print("Smart Study AI");
+    display.print(F("Smart Study AI"));
 
     display.setCursor(43, 38);
-    display.print("Platform");
+    display.print(F("Platform"));
 
     display.display();
 
@@ -238,7 +243,7 @@ static void showMainMenu()
     display.setTextColor(SSD1306_WHITE);
 
     display.setCursor(20, 0);
-    display.println("Smart Study AI");
+    display.println(F("Smart Study AI"));
 
     display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
 
@@ -248,17 +253,35 @@ static void showMainMenu()
 
         if (i == selectedMenu)
         {
-            display.print("> ");
+            display.print(F("> "));
         }
         else
         {
-            display.print("  ");
+            display.print(F("  "));
         }
 
-        display.print(menuItems[i]);
+        showMenuItem(i);
     }
 
     display.display();
+}
+
+static void showMenuItem(uint8_t index)
+{
+    switch (index)
+    {
+        case MENU_FOCUS:
+            display.print(F("Focus Session"));
+            break;
+
+        case MENU_AI:
+            display.print(F("AI Assistant"));
+            break;
+
+        case MENU_BREAK:
+            display.print(F("Break Mode"));
+            break;
+    }
 }
 
 //==================================================
@@ -280,21 +303,21 @@ static void drawDashboardStatic()
     display.setTextSize(1);
 
     display.setCursor(0,0);
-    display.println("Smart Study AI");
+    display.println(F("Smart Study AI"));
 
     display.drawLine(0,10,127,10,SSD1306_WHITE);
 
     display.setCursor(0,18);
-    display.print("Motion : ");
+    display.print(F("Motion : "));
 
     display.setCursor(0,30);
-    display.print("Light  : ");
+    display.print(F("Light  : "));
 
     display.setCursor(0,42);
-    display.print("Rec.   : ");
+    display.print(F("Rec.   : "));
 
     display.setCursor(0,54);
-    display.print("Time   : ");
+    display.print(F("Time   : "));
 
 }
 
@@ -315,26 +338,26 @@ static void updateDashboardValues(
     display.fillRect(54, 54, 42, 8, SSD1306_BLACK);
 
     display.setCursor(54,18);
-    display.println(motion ? "YES" : "NO");
+    display.println(motion ? F("YES") : F("NO"));
 
     display.setCursor(54,30);
     display.print(light);
-    display.println("%");
+    display.println(F("%"));
 
     display.setCursor(54,42);
 
     switch (getSessionState())
     {
         case SESSION_FOCUS:
-            display.print("Studying...");
+            display.print(F("Studying..."));
             break;
 
         case SESSION_IDLE:
-            display.print("Idle");
+            display.print(F("Idle"));
             break;
 
         case SESSION_BREAK:
-            display.print("Break");
+            display.print(F("Break"));
             break;
     }
 
