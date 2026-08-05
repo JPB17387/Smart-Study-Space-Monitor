@@ -24,6 +24,8 @@ void setup()
     initTimer();
     initSession();
     initUI();
+
+    runStartupSequence();
 }
 
 /**
