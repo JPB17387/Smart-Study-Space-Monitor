@@ -37,7 +37,7 @@ void setup()
  * and UI retrieves recommendation without direct session state coupling.
  */
 void loop()
-{
+{ 
     updatePIR();
 
     int light = getLightPercent();
