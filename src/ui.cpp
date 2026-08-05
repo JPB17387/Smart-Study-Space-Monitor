@@ -1,6 +1,6 @@
 #include "ui.h"
 #include "config.h"
-#include "session.h"
+#include "recommendation.h"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -12,11 +12,9 @@
 
 static uint8_t selectedMenu = 0;
 
-
 //==================================================
 // OLED Configuration
 //==================================================
-
 
 Adafruit_SSD1306 display(
     SCREEN_WIDTH,
@@ -34,16 +32,6 @@ static void showGreeting();
 static void showLoadingAnimation();
 static void showLogo();
 static void showMainMenu();
-
-/**
- * @brief Prints an existing menu label from program memory.
- *
- * Normal OLED string literals occupied AVR SRAM before display.begin()
- * allocated the SSD1306 framebuffer. Flash-resident text preserves the
- * menu labels, order, and rendering behavior while leaving safe RAM.
- *
- * @param index Existing menu item index.
- */
 static void showMenuItem(uint8_t index);
 
 static bool menuNeedsRedraw = true;
@@ -52,15 +40,9 @@ static bool menuNeedsRedraw = true;
 // Global Variables
 //==================================================
 
-// The previous implementation declared UI state and menu selection twice.
-// Keeping this single screen state removes duplicate global definitions.
-// Screen order and navigation behavior are unchanged.
 static Screen currentScreen = SCREEN_BOOT;
-
 static bool oledInitialized = false;
-
 static bool screenNeedsRedraw = true;
-
 static unsigned long lastDashboardRefresh = 0;
 
 //==================================================
@@ -68,49 +50,38 @@ static unsigned long lastDashboardRefresh = 0;
 //==================================================
 
 void initUI()
+{
+    if (!display.begin(
+        SSD1306_SWITCHCAPVCC,
+        OLED_ADDRESS))
     {
-        //Wire.begin();
-
-        if (!display.begin(
-            SSD1306_SWITCHCAPVCC,
-            OLED_ADDRESS))
-        {
-            Serial.println(F("OLED initialization failed."));
-
-            while (true);
-        }
-
-        Serial.println(F("OLED initialized successfully."));
-
-        display.clearDisplay();
-
-        display.setTextColor(SSD1306_WHITE);
-
-        display.setTextSize(1);
-
-        display.setTextWrap(false);
-
-        display.display();
-
-        oledInitialized = true;
+        Serial.println(F("OLED initialization failed."));
+        while (true);
     }
 
-    //==================================================
-    // Startup Sequence
-    //==================================================
+    Serial.println(F("OLED initialized successfully."));
 
-    void runStartupSequence()
-    {
-        showBootAnimation();
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setTextWrap(false);
+    display.display();
 
-        showGreeting();
+    oledInitialized = true;
+}
 
-        showLoadingAnimation();
+//==================================================
+// Startup Sequence
+//==================================================
 
-        showLogo();
-
-        setScreen(SCREEN_MENU);
-    }
+void runStartupSequence()
+{
+    showBootAnimation();
+    showGreeting();
+    showLoadingAnimation();
+    showLogo();
+    setScreen(SCREEN_MENU);
+}
 
 //==================================================
 // Boot Animation
@@ -119,7 +90,6 @@ void initUI()
 static void showBootAnimation()
 {
     display.clearDisplay();
-
     display.setTextColor(SSD1306_WHITE);
     display.setTextSize(1);
 
@@ -133,10 +103,8 @@ static void showBootAnimation()
     display.print(F("Initializing......"));
 
     display.drawRect(14, 40, 100, 10, SSD1306_WHITE);
-
     display.display();
 
-    // Progress bar animation
     for (int progress = 0; progress <= 98; progress += 7)
     {
         display.fillRect(15, 41, progress, 8, SSD1306_WHITE);
@@ -154,7 +122,6 @@ static void showBootAnimation()
 static void showGreeting()
 {
     display.clearDisplay();
-
     display.setTextColor(SSD1306_WHITE);
 
     display.setTextSize(2);
@@ -166,7 +133,6 @@ static void showGreeting()
     display.print(F("Sir, Jhon Paul"));
 
     display.display();
-
     delay(2000);
 }
 
@@ -195,13 +161,11 @@ static void showLoadingAnimation()
         }
 
         display.display();
-
         delay(200);
     }
 
     display.print(F("done"));
     display.display();
-
     delay(1500);
 }
 
@@ -228,13 +192,13 @@ static void showLogo()
     display.print(F("Platform"));
 
     display.display();
-
     delay(5000);
 }
 
 //==================================================
 // Main Menu
 //==================================================
+
 static void showMainMenu()
 {
     display.clearDisplay();
@@ -290,10 +254,6 @@ static void showMenuItem(uint8_t index)
 
 /**
  * @brief Draws the dashboard content that does not change during a session.
- *
- * The previous dashboard redraw cleared the complete OLED buffer every loop.
- * Static labels are now drawn once when the dashboard is entered.
- * The OLED layout and displayed field positions are unchanged.
  */
 static void drawDashboardStatic()
 {
@@ -318,14 +278,13 @@ static void drawDashboardStatic()
 
     display.setCursor(0,54);
     display.print(F("Time   : "));
-
 }
 
 /**
  * @brief Updates the live dashboard values at the configured refresh interval.
  *
  * This clears only the changing value areas to reduce OLED flicker.
- * Timer, PIR, LDR, and session status continue to use existing module data.
+ * Retrieves recommendation directly from Recommendation Provider.
  */
 static void updateDashboardValues(
     bool motion,
@@ -334,7 +293,7 @@ static void updateDashboardValues(
 {
     display.fillRect(54, 18, 30, 8, SSD1306_BLACK);
     display.fillRect(54, 30, 30, 8, SSD1306_BLACK);
-    display.fillRect(54, 42, 66, 8, SSD1306_BLACK);
+    display.fillRect(54, 42, 74, 8, SSD1306_BLACK);
     display.fillRect(54, 54, 42, 8, SSD1306_BLACK);
 
     display.setCursor(54,18);
@@ -345,21 +304,7 @@ static void updateDashboardValues(
     display.println(F("%"));
 
     display.setCursor(54,42);
-
-    switch (getSessionState())
-    {
-        case SESSION_FOCUS:
-            display.print(F("Studying..."));
-            break;
-
-        case SESSION_IDLE:
-            display.print(F("Idle"));
-            break;
-
-        case SESSION_BREAK:
-            display.print(F("Break"));
-            break;
-    }
+    display.print(getRecommendation());
 
     unsigned long minutes = elapsedSeconds / 60;
     unsigned long seconds = elapsedSeconds % 60;
@@ -382,14 +327,6 @@ static void updateDashboardValues(
 
 /**
  * @brief Renders live study information on the Dashboard.
- *
- * Static dashboard content is drawn once per screen entry. Dynamic timer,
- * PIR, and LDR values refresh using DISPLAY_REFRESH_INTERVAL.
- * The screen layout and public UI API are unchanged.
- *
- * @param motion Current PIR motion state.
- * @param light Current ambient light percentage.
- * @param elapsedSeconds Current study session elapsed time.
  */
 static void showDashboard(
     bool motion,
@@ -414,6 +351,7 @@ static void showDashboard(
         lastDashboardRefresh = millis();
     }
 }
+
 //==================================================
 // Screen Manager
 //==================================================
@@ -441,125 +379,117 @@ void updateUI(
     int light,
     unsigned long elapsedSeconds,
     ButtonEvent button)
+{
+    (void)button;
+
+    switch (currentScreen)
     {
-        (void)button;
+        case SCREEN_BOOT:
+            showBootAnimation();
+            currentScreen = SCREEN_GREETING;
+            break;
 
-        switch (currentScreen)
+        case SCREEN_GREETING:
+            showGreeting();
+            currentScreen = SCREEN_LOADING;
+            break;
+
+        case SCREEN_LOADING:
+            showLoadingAnimation();
+            currentScreen = SCREEN_LOGO;
+            break;
+
+        case SCREEN_LOGO:
+            showLogo();
+            currentScreen = SCREEN_DASHBOARD;
+            break;
+
+        case SCREEN_MENU:   
         {
-            case SCREEN_BOOT:
-                showBootAnimation();
-                currentScreen = SCREEN_GREETING;
-                break;
-
-            case SCREEN_GREETING:
-                showGreeting();
-                currentScreen = SCREEN_LOADING;
-                break;
-
-            case SCREEN_LOADING:
-                showLoadingAnimation();
-                currentScreen = SCREEN_LOGO;
-                break;
-
-            case SCREEN_LOGO:
-                showLogo();
-                currentScreen = SCREEN_DASHBOARD;
-                break;
-
-            case SCREEN_MENU:   
+            switch (button)
             {
-                switch (button)
+                case BUTTON_UP:
+                    if (selectedMenu > 0)
+                    {
+                        selectedMenu--;
+                        menuNeedsRedraw = true;
+                    }
+                    break;
+
+                case BUTTON_DOWN:
+                    if (selectedMenu < MENU_COUNT - 1)
+                    {
+                        selectedMenu++;
+                        menuNeedsRedraw = true;
+                    }
+                    break;
+
+                case BUTTON_SELECT:
                 {
-                    case BUTTON_UP:
-
-                        if (selectedMenu > 0)
-                        {
-                            selectedMenu--;
-                            menuNeedsRedraw = true;
-                        }
-
-                        break;
-
-                    case BUTTON_DOWN:
-
-                        if (selectedMenu < MENU_COUNT - 1)
-                        {
-                            selectedMenu++;
-                            menuNeedsRedraw = true;
-                        }
-
-                        break;
-                        case BUTTON_SELECT:
-                        {
-                            switch (selectedMenu)
-                            {
-                                case MENU_FOCUS:
-                                    setScreen(SCREEN_DASHBOARD);
-                                    break;
-
-                                case MENU_AI:
-                                    setScreen(SCREEN_AI);
-                                    break;
-
-                                case MENU_BREAK:
-                                    setScreen(SCREEN_BREAK);
-                                    break;
-                            }
-
+                    switch (selectedMenu)
+                    {
+                        case MENU_FOCUS:
+                            setScreen(SCREEN_DASHBOARD);
                             break;
-                        }
 
-                    default:
+                        case MENU_AI:
+                            setScreen(SCREEN_AI);
+                            break;
+
+                        case MENU_BREAK:
+                            setScreen(SCREEN_BREAK);
+                            break;
+                    }
                     break;
                 }
 
-                if (menuNeedsRedraw)
-                {
-                    showMainMenu();
-                    menuNeedsRedraw = false;
-                }
-
-                break;
+                default:
+                    break;
             }
 
-            case SCREEN_AI:
+            if (menuNeedsRedraw)
             {
-                if(button == BUTTON_SELECT)
-                {
-                    setScreen(SCREEN_MENU);
-                    menuNeedsRedraw = true;
-                }
-
-                break;
+                showMainMenu();
+                menuNeedsRedraw = false;
             }
+            break;
+        }
 
-            case SCREEN_BREAK:
+        case SCREEN_AI:
+        {
+            if (button == BUTTON_SELECT)
             {
-                if(button == BUTTON_SELECT)
-                {
-                    setScreen(SCREEN_MENU);
-                    menuNeedsRedraw = true;
-                }
-
-                break;
+                setScreen(SCREEN_MENU);
+                menuNeedsRedraw = true;
             }
+            break;
+        }
 
-            case SCREEN_DASHBOARD:
+        case SCREEN_BREAK:
+        {
+            if (button == BUTTON_SELECT)
+            {
+                setScreen(SCREEN_MENU);
+                menuNeedsRedraw = true;
+            }
+            break;
+        }
+
+        case SCREEN_DASHBOARD:
             showDashboard(
                 motion,
                 light,
                 elapsedSeconds
             );
 
-            if(button == BUTTON_SELECT)
+            if (button == BUTTON_SELECT)
             {
                 setScreen(SCREEN_MENU);
                 menuNeedsRedraw = true;
             }
-
             break;
 
-            case SCREEN_IDLE:
-                break;
-        }
+        case SCREEN_IDLE:
+            break;
     }
+}

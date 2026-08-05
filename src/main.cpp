@@ -4,14 +4,15 @@
 #include "ldr.h"
 #include "timer.h"
 #include "session.h"
+#include "recommendation.h"
 #include "button.h"
 #include "buzzer.h"
 
 /**
- * @brief Initializes hardware drivers, timer, session logic, and UI.
+ * @brief Initializes hardware drivers, timer, session logic, recommendation provider, and UI.
  *
  * The existing startup order is preserved. Session initialization follows
- * timer initialization so it can later control pause and resume behavior.
+ * timer initialization, followed by recommendation provider initialization.
  */
 void setup()
 {
@@ -23,16 +24,17 @@ void setup()
     initBuzzer();
     initTimer();
     initSession();
+    initRecommendation();
     initUI();
 
     runStartupSequence();
 }
 
 /**
- * @brief Coordinates driver updates, session state, and UI rendering.
+ * @brief Coordinates driver updates, session state, recommendation engine, and UI rendering.
  *
- * PIR data is read once and supplied to the session state machine and UI.
- * No hardware or UI logic is moved into this coordinator.
+ * Sensors feed session state, session state and light level feed recommendation engine,
+ * and UI retrieves recommendation without direct session state coupling.
  */
 void loop()
 {
@@ -47,6 +49,11 @@ void loop()
     updateSession(
         motion,
         getIdleSeconds()
+    );
+
+    updateRecommendation(
+        getSessionState(),
+        light
     );
 
     ButtonEvent button = updateButton();
