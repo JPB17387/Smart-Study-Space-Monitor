@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "button.h"
+#include "buzzer.h"
 
 const unsigned long DEBOUNCE_TIME = 40;
 
@@ -76,16 +77,19 @@ ButtonEvent updateButton()
 {
     if (buttonPressed(upButton))
     {
+        beep();
         return BUTTON_UP;
     }
 
     if (buttonPressed(downButton))
     {
+        beep();
         return BUTTON_DOWN;
     }
 
     if (buttonPressed(selectButton))
     {
+        beep();
         return BUTTON_SELECT;
     }
 
