@@ -4,4 +4,4 @@
 void initBuzzer();
 void beep(unsigned int durationMs = 100);
 
-#endif
+#endif  

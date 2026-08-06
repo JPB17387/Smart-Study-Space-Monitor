@@ -89,7 +89,7 @@ ButtonEvent updateButton()
 
     if (buttonPressed(selectButton))
     {
-        beep();
+        beep(250);
         return BUTTON_SELECT;
     }
 
