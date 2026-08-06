@@ -204,3 +204,10 @@ AI Recommendation System
 Stage 10
 Final Housing + Presentation
 ```
+
+
+## Issues 
+
+Adafruit 1306 Library Compilation Error 
+
+https://github.com/adafruit/Adafruit_SSD1306/issues/301
