@@ -3,6 +3,17 @@
 <br>
 <p align="center">This is the main project repository of my project for Hackster Invent the Future Global Hackathon.</p>
 
+**Sample Images**<br>
+<img align="center" src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
+<img align="center" src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
+
+
+**Sample Video**
+<video width="640" height="360" align="center" controls>
+  <source src="./docs/screenshots/vid1.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## Important Details
 Displays Address: 0x3C
 
