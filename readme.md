@@ -104,7 +104,7 @@ A0 → LDR AO
 | Component                  | Arduino Pin |
 | -------------------------- | ----------- |
 | PIR Sensor                 | D2          |
-| Active Buzzer              | D4          |
+| Active Buzzer              | D8          |
 | Push Button (DOWN)         | D5          |
 | Push Button (UP)           | D6          |
 | Push Button (SELECT)       | D7          |
@@ -120,25 +120,38 @@ A0 → LDR AO
 Smart Study Space Monitor
 │
 ├── docs/
+│   ├── 01_ARCHITECTURE_ANALYSIS.md
+│   ├── 02_REFACTOR_PLAN.md
+│   ├── 03_IMPLEMENTATION.md
+│   ├── 04_TEST_REPORT.md
+│   ├── PHASE6_6_IMPLEMENTATION.md
+│   ├── PHASE6_7_FOCUS_SESSION_LOGIC.md
+│   ├── PHASE6_OLED_ROOT_CAUSE_ANALYSIS.md
 │   ├── architecture.md
 │   ├── milestones.md
-│   ├── wiring-diagram.png
+│   ├── roadmap.md
 │   ├── screenshots/
-│   └── demo.gif
+│   └── public/
 │
 ├── include/
+│   └── config.h
 │
 ├── lib/
-│   ├── DisplayManager/
-│   ├── SensorManager/
-│   ├── FocusTimer/
-│   ├── AIEngine/
-│   └── Utils/
 │
 ├── src/
 │   ├── main.cpp
-│   ├── sensors.cpp
-│   ├── sensors.h
+│   ├── button.cpp
+│   ├── button.h
+│   ├── buzzer.cpp
+│   ├── buzzer.h
+│   ├── ldr.cpp
+│   ├── ldr.h
+│   ├── pir.cpp
+│   ├── pir.h
+│   ├── recommendation.cpp
+│   ├── recommendation.h
+│   ├── session.cpp
+│   ├── session.h
 │   ├── timer.cpp
 │   ├── timer.h
 │   ├── ui.cpp
@@ -147,8 +160,10 @@ Smart Study Space Monitor
 ├── test/
 │
 ├── platformio.ini
-├── README.md
-├── LICENSE
+├── readme.md
+├── CHANGELOG.md
+├── LICENSE-APACHE
+├── LICENSE-MIT
 └── .gitignore
 ```
 

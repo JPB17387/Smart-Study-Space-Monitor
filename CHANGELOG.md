@@ -20,3 +20,20 @@
 ### Rollback
 
 - Pre-change snapshot: `backup/Milestone1/`.
+
+## Phase 6 — Current Firmware Documentation
+
+### Implemented
+- OLED startup sequence and menu framework
+- PIR motion sensing and idle state tracking
+- LDR ambient light percentage conversion
+- Debounced UP/DOWN/SELECT button navigation
+- Buzzer feedback on button press
+- Timer pause/resume behavior
+- Flash-resident recommendation provider
+- Dashboard rendering with static/dynamic refresh separation
+
+### Notes
+- `SCREEN_AI`, `SCREEN_BREAK`, and `SCREEN_IDLE` states are present but do not have dedicated screen render content in the current implementation.
+- `SESSION_BREAK` is declared in `session.h` but is not entered by current PIR/session logic.
+- `getLightStatus()` is implemented but not currently displayed.
