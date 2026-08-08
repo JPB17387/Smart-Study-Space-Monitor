@@ -205,6 +205,9 @@ Stage 10
 Final Housing + Presentation
 ```
 
+## LICENSE 
+[Apache License](LICENSE-APACHE)<br>
+[MIT License](LICENSE-MIT)
 
 ## Issues 
 
