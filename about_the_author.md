@@ -3,6 +3,14 @@
 <br>
 </p>
 
-<h1 align="center">Creator/Author</h1>
+<h1 align="center"><small>Creator/Author</small> <br> <strong>Jhon Paul Baonil</strong></h1>
 
-<p></p>
+**University**
+- Cebu Technological University Dumanjug Extension Campus
+
+**Course**
+- Bachelor in Industrial Technology - Major in Computer Technology
+
+**More About Me** <br>
+Visit my website portfolio through this link: [Website Portfolio](https://jpb17387.github.io/My-Website-Portfolio/html/home.html)<br>
+Visit my Facebook Profile through this link:[Facebook Profile](https://www.facebook.com/jhonpaulbaonil.paul)<br>
