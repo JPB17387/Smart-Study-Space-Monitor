@@ -3,15 +3,21 @@
 <br>
 <p align="center">This is the main project repository of my project for Hackster Invent the Future Global Hackathon.</p>
 
-**Sample Images**<br>
-<img align="center" src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
-<img align="center" src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
+**Sample Images of V1.0.0**<br>
+<p align="center">
+<img src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
+<img src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
+<img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
+</p>
 
+**Sample Images of V2.0.0**<br>
+<p align="center">
+<img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
+</p>
 
 **Sample Video**
 <video width="640" height="360" align="center" controls>
   <source src="./docs/screenshots/vid1.mp4" type="video/mp4">
-  Your browser does not support the video tag.
 </video>
 
 ## Important Details
