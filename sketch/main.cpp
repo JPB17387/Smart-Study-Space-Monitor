@@ -1,12 +1,13 @@
 #include <Arduino.h>
-#include "ui.h"
+#include <Arduino_RouterBridge.h>
+#include <Arduino_RPClite.h>
 #include "pir.h"
 #include "ldr.h"
 #include "timer.h"
 #include "session.h"
 #include "recommendation.h"
-#include "button.h"
 #include "buzzer.h"
+#include "communication.h"
 
 /**
  * @brief Initializes hardware drivers, timer, session logic, recommendation provider, and UI.
@@ -14,20 +15,26 @@
  * The existing startup order is preserved. Session initialization follows
  * timer initialization, followed by recommendation provider initialization.
  */
+
+void ping()
+{
+    Serial.println(F("RPC ping received"));
+}
+
 void setup()
 {
     Serial.begin(9600);
 
     initPIR();
     initLDR();
-    initButton();
     initBuzzer();
     initTimer();
     initSession();
     initRecommendation();
-    initUI();
+    initCommunication();
 
-    runStartupSequence();
+    Bridge.begin();
+    Bridge.provide("ping", ping);
 }
 
 /**
@@ -36,8 +43,10 @@ void setup()
  * Sensors feed session state, session state and light level feed recommendation engine,
  * and UI retrieves recommendation without direct session state coupling.
  */
-void loop()
-{ 
+void loop() { 
+
+    updateCommunication();
+  
     updatePIR();
 
     int light = getLightPercent();
@@ -56,12 +65,4 @@ void loop()
         light
     );
 
-    ButtonEvent button = updateButton();
-
-    updateUI(
-        motion,
-        light,
-        getElapsedSeconds(),
-        button
-    );
 }

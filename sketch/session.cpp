@@ -91,3 +91,33 @@ SessionState getSessionState()
 {
     return currentSessionState;
 }
+
+void startFocusSession()
+{
+    currentSessionState = SESSION_FOCUS;
+    startSession();
+}
+
+void pauseFocusSession()
+{
+    currentSessionState = SESSION_IDLE;
+    pauseSession();
+}
+
+void resumeFocusSession()
+{
+    currentSessionState = SESSION_FOCUS;
+    resumeSession();
+}
+
+void stopFocusSession()
+{
+    currentSessionState = SESSION_IDLE;
+    stopSession();
+}
+
+void startBreakSession()
+{
+    currentSessionState = SESSION_BREAK;
+    stopSession();
+}

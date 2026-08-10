@@ -1,0 +1,1 @@
+// Application entry point is implemented in main.cpp.

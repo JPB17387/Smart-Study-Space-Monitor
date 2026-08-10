@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Study AI Platform</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --focus: #22c55e;
+    --break: #3b82f6;
+    --idle: #f59e0b;
+    --stopped: #64748b;
+    --error: #ef4444;
+    --accent: #6366f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); margin: 0 0 20px; font-size: 0.9rem; }
+
+  #banner {
+    display: none;
+    background: var(--error);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+
+  .state-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .state-focus   { background: var(--focus); color: #06230f; }
+  .state-break   { background: var(--break); color: #06122c; }
+  .state-idle    { background: var(--idle); color: #2c1a03; }
+  .state-stopped { background: var(--stopped); color: #fff; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .card .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card .value { font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
+
+  .recommendation {
+    background: var(--card);
+    border-left: 4px solid var(--accent);
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+  }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; }
+  button {
+    flex: 1 1 120px;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    transition: opacity 0.15s;
+  }
+  button:active { opacity: 0.7; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  #btn-start   { background: var(--focus); }
+  #btn-pause   { background: var(--idle); }
+  #btn-resume  { background: var(--accent); }
+  #btn-stop    { background: var(--error); }
+  #btn-break   { background: var(--break); }
+</style>
+</head>
+<body>
+  <h1>Smart Study AI Platform</h1>
+  <p class="subtitle">Live study-environment monitor</p>
+
+  <div id="banner"></div>
+
+  <span id="state-badge" class="state-badge state-stopped">--</span>
+
+  <div class="grid">
+    <div class="card"><div class="label">Motion</div><div class="value" id="v-motion">--</div></div>
+    <div class="card"><div class="label">Light</div><div class="value" id="v-light">--</div></div>
+    <div class="card"><div class="label">Session Time</div><div class="value" id="v-session">--</div></div>
+    <div class="card"><div class="label">Idle Time</div><div class="value" id="v-idle">--</div></div>
+  </div>
+
+  <div class="recommendation" id="v-recommendation">Waiting for data...</div>
+
+  <div class="controls">
+    <button id="btn-start">Start Focus</button>
+    <button id="btn-pause">Pause</button>
+    <button id="btn-resume">Resume</button>
+    <button id="btn-stop">Stop</button>
+    <button id="btn-break">Start Break</button>
+  </div>
+
+<script>
+const POLL_MS = 1000; // ~1 Hz, per platform performance target
+
+const badge = document.getElementById('state-badge');
+const banner = document.getElementById('banner');
+const els = {
+  motion: document.getElementById('v-motion'),
+  light: document.getElementById('v-light'),
+  session: document.getElementById('v-session'),
+  idle: document.getElementById('v-idle'),
+  rec: document.getElementById('v-recommendation'),
+};
+
+function fmtSeconds(total) {
+  const s = Math.max(0, Math.floor(total));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+function showBanner(msg) {
+  banner.textContent = msg;
+  banner.style.display = msg ? 'block' : 'none';
+}
+
+function setBadge(text, cls) {
+  badge.textContent = text;
+  badge.className = `state-badge ${cls}`;
+}
+
+function applyTelemetry(data) {
+  els.motion.textContent = data.motion ? 'Detected' : 'None';
+  els.light.textContent = `${data.light}%`;
+  els.session.textContent = fmtSeconds(data.sessionTime);
+  els.idle.textContent = `${Math.floor(data.idleTime)}s`;
+  els.rec.textContent = data.recommendation || '--';
+
+  if (data.stale) {
+    showBanner('Showing last known reading -- device unreachable.');
+  } else {
+    showBanner('');
+  }
+
+  if (!data.motion && data.idleTime >= 60) {
+    setBadge('Idle', 'state-idle');
+  } else if (data.focus) {
+    setBadge('Focus', 'state-focus');
+  } else {
+    setBadge('Break', 'state-break');
+  }
+}
+
+async function pollState() {
+  try {
+    const res = await fetch('/api/state');
+    const envelope = await res.json();
+
+    if (envelope.type === 'error') {
+      showBanner(envelope.data.message || 'Device error.');
+      setBadge('Stopped', 'state-stopped');
+      return;
+    }
+
+    applyTelemetry(envelope.data);
+  } catch (err) {
+    showBanner('Cannot reach the backend.');
+    setBadge('Stopped', 'state-stopped');
+  }
+}
+
+async function sendCommand(command) {
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+
+  try {
+    const res = await fetch(`/api/command/${command}`, { method: 'POST' });
+    const envelope = await res.json();
+
+    if (envelope.type === 'error') {
+      showBanner(envelope.data.message || `Command '${command}' failed.`);
+    } else {
+      pollState();
+    }
+  } catch (err) {
+    showBanner('Cannot reach the backend.');
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+  }
+}
+
+document.getElementById('btn-start').addEventListener('click', () => sendCommand('start_session'));
+document.getElementById('btn-pause').addEventListener('click', () => sendCommand('pause_session'));
+document.getElementById('btn-resume').addEventListener('click', () => sendCommand('resume_session'));
+document.getElementById('btn-stop').addEventListener('click', () => sendCommand('stop_session'));
+document.getElementById('btn-break').addEventListener('click', () => sendCommand('start_break'));
+
+pollState();
+setInterval(pollState, POLL_MS);
+</script>
+</body>
+</html>

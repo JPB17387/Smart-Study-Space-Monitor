@@ -1,0 +1,6 @@
+name: Smart Study Space Monitor
+description: Smart Study Space Monitor
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: 🤖
