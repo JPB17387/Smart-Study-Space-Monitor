@@ -7,7 +7,6 @@
 <p align="center">
 <img src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
 <img src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
-<img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
 </p>
 
 **Sample Images of V2.0.0**<br>
