@@ -19,19 +19,6 @@ Displays Address: 0x3C
 
 ### Wiring:
 
-#### OLED Wiring
-```
-OLED
-
-GND → GND
-
-VCC → 5V
-
-SCL → A5
-
-SDA → A4
-```
-
 #### PIR Sensor Wiring
 ```
 PIR
@@ -65,16 +52,6 @@ Ignore DO for now.
 We'll use the analog value.
 ```
 
-#### Push Button Wiring
-
-```
-| Component                  | Arduino Pin |
-| -------------------------- | ----------- |
-| Push Button (DOWN)         | D5          |
-| Push Button (UP)           | D6          |
-| Push Button (SELECT)       | D7          |
-```
-
 #### Buzzer Wiring
 ```
 GND → GND
@@ -89,20 +66,13 @@ UNO
 ├── OLED VCC
 ├── PIR VCC
 ├── LDR VCC
-├── BUZZER VCC
-└── BUTTON VCC
+└── BUZZER VCC
 
 GND
 ├── OLED GND
 ├── PIR GND
 |── LDR GND
-├── BUZZER GND
-└── BUTTON GND
-
-A4 → OLED SDA
-
-A5 → OLED SCL
-
+└── BUZZER GND
 
 
 D2 → PIR OUT
@@ -116,13 +86,7 @@ A0 → LDR AO
 | -------------------------- | ----------- |
 | PIR Sensor                 | D2          |
 | Active Buzzer              | D8          |
-| Push Button (DOWN)         | D5          |
-| Push Button (UP)           | D6          |
-| Push Button (SELECT)       | D7          |
 | LDR Sensor (analog output) | A0          |
-| OLED Display (I2C SDA)     | A4          |
-| OLED Display (I2C SCL)     | A5          |
-
 ```
 
 ## Folder Structure
