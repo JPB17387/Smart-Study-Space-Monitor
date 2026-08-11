@@ -24,8 +24,15 @@
   <source src="./docs/screenshots/vid1.mp4" type="video/mp4">
 </video>
 
-## Important Details
-Displays Address: 0x3C
+## Project Overview
+Smart Study AI Platform is an Arduino Uno Q project that combines environmental sensing, session management, and a browser-based WebUI. The current release focuses on a live dashboard that displays motion, ambient light, session timing, and recommendation feedback through Arduino App Lab.
+
+### Current Release Focus
+- Arduino Uno Q WebUI dashboard
+- Live telemetry from motion and light sensors
+- Session control from the web interface
+- Recommendation display and state feedback
+- Bridge RPC communication between the MCU and the App Lab host
 
 ### Wiring:
 
@@ -152,65 +159,37 @@ Smart Study Space Monitor
 └── .gitignore
 ```
 
-## Plan to implement this project
+## Release Status
 
-```
-Stage 1
-OLED only ✅
-(Currently working)
+### v2.0.0 — WebUI Release
+This release replaces the earlier OLED prototype experience with a browser-based dashboard for the Arduino Uno Q platform.
 
-↓
+Implemented in this release:
+- WebUI dashboard for live telemetry
+- MCU-to-WebUI communication via Bridge RPC
+- Motion and light sensor telemetry
+- Session commands from the browser
+- Recommendation output displayed in the dashboard
 
-Stage 2
-OLED + PIR
+### Legacy Notes
+The earlier v1.0.0 implementation used an SSD1306 OLED display and local button-based interaction. That path is now considered legacy and is no longer the primary release experience.
 
-↓
-
-Stage 3
-OLED + LDR
-
-↓
-
-Stage 4
-OLED + Push Button
-
-↓
-
-Stage 5
-OLED + Buzzer
-
-↓
-
-Stage 6
-Combine everything
-
-↓
-
-Stage 7
-Study Session Logic
-
-↓
-
-Stage 8
-Arduino Cloud / AppLab
-
-↓
-
-Stage 9
-AI Recommendation System
-
-↓
-
-Stage 10
-Final Housing + Presentation
-```
+## Project Structure
+The project now includes both embedded firmware and App Lab/WebUI components:
+- `sketch/` for the Arduino Uno Q firmware
+- `python/` for the host-side App Lab integration
+- `assets/` for the browser dashboard
+- `docs/` for architecture and implementation notes
 
 ## LICENSE 
 [Apache License](LICENSE-APACHE)<br>
 [MIT License](LICENSE-MIT)
 
-## Issues 
+## Notes
 
-Adafruit 1306 Library Compilation Error 
+The current release is centered on the Uno Q WebUI experience rather than the legacy SSD1306 OLED interface.
 
-https://github.com/adafruit/Adafruit_SSD1306/issues/301
+## Release Documentation
+- [Release Notes](RELEASE_NOTES.md)
+- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
+- [Phase 6 Documentation](docs/PHASE6_DOCUMENTATION.md)
