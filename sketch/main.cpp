@@ -38,10 +38,11 @@ void setup()
 }
 
 /**
- * @brief Coordinates driver updates, session state, recommendation engine, and UI rendering.
+ * @brief Coordinates driver updates, session state, recommendation engine, buzzer, and UI.
  *
  * Sensors feed session state, session state and light level feed recommendation engine,
- * and UI retrieves recommendation without direct session state coupling.
+ * UI retrieves recommendation without direct session state coupling, and the buzzer
+ * engine is advanced non-blockingly once per iteration.
  */
 void loop() { 
 
@@ -64,5 +65,29 @@ void loop() {
         getSessionState(),
         light
     );
+
+    // Idle reminder reuses the existing SESSION_IDLE transition (driven
+    // by SESSION_IDLE_TIMEOUT in config.h) rather than a second,
+    // unrelated timeout system. Motion cancels it immediately: as soon
+    // as the PIR sees motion, updateSession() above moves the state
+    // back to SESSION_FOCUS, and this stops the reminder on the very
+    // next loop iteration -- it never touches the rest of the session.
+    if (getSessionState() == SESSION_IDLE)
+    {
+        startIdleWarningBuzzer();
+    }
+    else
+    {
+        stopIdleWarningBuzzer();
+    }
+
+    // One notification pulse per actual recommendation change, not per
+    // telemetry poll -- hasRecommendationChanged() already tracks this.
+    if (hasRecommendationChanged())
+    {
+        queueNotificationBeep();
+    }
+
+    updateBuzzer();
 
 }

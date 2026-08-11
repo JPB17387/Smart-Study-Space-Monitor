@@ -3,128 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Study AI Platform</title>
+<title>Smart Study AI</title>
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --focus: #22c55e;
-    --break: #3b82f6;
-    --idle: #f59e0b;
-    --stopped: #64748b;
-    --error: #ef4444;
-    --accent: #6366f1;
+    --bg: #14181f;
+    --surface: #1b212b;
+    --line: #2a3140;
+    --text: #eceff3;
+    --muted: #8b93a3;
+    --accent: #6c8eef;
+    --accent-soft: rgba(108, 142, 239, 0.14);
+    --warn: #d8a15c;
+    --warn-soft: rgba(216, 161, 92, 0.12);
+    --stop: #c96a5f;
+    --stop-soft: rgba(201, 106, 95, 0.12);
   }
+
   * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
   body {
     margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Iowan Old Style", "Georgia", "Segoe UI", sans-serif;
     background: var(--bg);
     color: var(--text);
-    padding: 24px;
-  }
-  h1 { font-size: 1.4rem; margin: 0 0 4px; }
-  .subtitle { color: var(--muted); margin: 0 0 20px; font-size: 0.9rem; }
-
-  #banner {
-    display: none;
-    background: var(--error);
-    color: white;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 0.9rem;
   }
 
-  .state-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 999px;
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 40px 20px 24px;
+  }
+
+  header { margin-bottom: 28px; }
+
+  h1 {
+    font-size: 1.5rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin: 4px 0 0;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  #connection-banner {
+    display: none;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.82rem;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border: 1px solid rgba(216, 161, 92, 0.35);
+    border-radius: 6px;
+    padding: 8px 12px;
     margin-bottom: 20px;
   }
-  .state-focus   { background: var(--focus); color: #06230f; }
-  .state-break   { background: var(--break); color: #06122c; }
-  .state-idle    { background: var(--idle); color: #2c1a03; }
-  .state-stopped { background: var(--stopped); color: #fff; }
 
-  .grid {
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .status-dot.focus   { background: var(--accent); }
+  .status-dot.break   { background: #7fb08a; }
+  .status-dot.idle    { background: var(--warn); }
+  .status-dot.stopped { background: var(--muted); }
+
+  #status-text { color: var(--text); font-weight: 600; }
+
+  .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    font-family: "Segoe UI", sans-serif;
   }
-  .card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 14px 16px;
+
+  .stat {
+    padding: 14px 10px;
+    text-align: center;
+    border-right: 1px solid var(--line);
   }
-  .card .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  .card .value { font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
+  .stat:last-child { border-right: none; }
+
+  .stat .label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .stat .value { font-size: 1.15rem; font-weight: 600; }
 
   .recommendation {
-    background: var(--card);
-    border-left: 4px solid var(--accent);
-    padding: 14px 16px;
-    border-radius: 8px;
-    margin-bottom: 24px;
+    padding: 16px 18px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .recommendation .label {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .recommendation .text {
+    font-size: 1.02rem;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  #idle-warning {
+    display: none;
+    padding: 14px 18px;
+    border-left: 3px solid var(--warn);
+    background: var(--warn-soft);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  #idle-warning .label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--warn);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  #idle-warning .text { font-size: 0.9rem; color: var(--text); }
+
+  section.controls { margin-top: 8px; }
+
+  .controls-label {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .button-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  button {
+    font-family: "Segoe UI", sans-serif;
+    flex: 1 1 130px;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--surface);
+    color: var(--text);
+    transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+  }
+
+  button:hover { background: #232a36; }
+  button:active { opacity: 0.75; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  #btn-start {
+    background: var(--accent);
+    color: #0e1522;
+    border-color: var(--accent);
+    flex-basis: 100%;
+    padding: 14px;
     font-size: 0.95rem;
   }
 
-  .controls { display: flex; flex-wrap: wrap; gap: 10px; }
-  button {
-    flex: 1 1 120px;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: opacity 0.15s;
+  #btn-stop {
+    border-color: rgba(201, 106, 95, 0.5);
+    color: var(--stop);
   }
-  button:active { opacity: 0.7; }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
-  #btn-start   { background: var(--focus); }
-  #btn-pause   { background: var(--idle); }
-  #btn-resume  { background: var(--accent); }
-  #btn-stop    { background: var(--error); }
-  #btn-break   { background: var(--break); }
+  #btn-stop:hover { background: var(--stop-soft); }
+
+  #btn-pause, #btn-resume, #btn-break { border-color: var(--line); }
+
+  footer {
+    text-align: center;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 18px 20px 24px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 420px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--line); }
+  }
 </style>
 </head>
 <body>
-  <h1>Smart Study AI Platform</h1>
-  <p class="subtitle">Live study-environment monitor</p>
+<main>
+  <header>
+    <h1>Smart Study AI</h1>
+    <p class="subtitle">Study environment assistant</p>
+  </header>
 
-  <div id="banner"></div>
+  <div id="connection-banner"></div>
 
-  <span id="state-badge" class="state-badge state-stopped">--</span>
-
-  <div class="grid">
-    <div class="card"><div class="label">Motion</div><div class="value" id="v-motion">--</div></div>
-    <div class="card"><div class="label">Light</div><div class="value" id="v-light">--</div></div>
-    <div class="card"><div class="label">Session Time</div><div class="value" id="v-session">--</div></div>
-    <div class="card"><div class="label">Idle Time</div><div class="value" id="v-idle">--</div></div>
+  <div class="status-line">
+    <span class="status-dot stopped" id="status-dot"></span>
+    <span>Status: <span id="status-text">--</span></span>
   </div>
 
-  <div class="recommendation" id="v-recommendation">Waiting for data...</div>
-
-  <div class="controls">
-    <button id="btn-start">Start Focus</button>
-    <button id="btn-pause">Pause</button>
-    <button id="btn-resume">Resume</button>
-    <button id="btn-stop">Stop</button>
-    <button id="btn-break">Start Break</button>
+  <div class="stats">
+    <div class="stat"><div class="label">Motion</div><div class="value" id="v-motion">--</div></div>
+    <div class="stat"><div class="label">Light</div><div class="value" id="v-light">--</div></div>
+    <div class="stat"><div class="label">Session</div><div class="value" id="v-session">--</div></div>
+    <div class="stat"><div class="label">Idle</div><div class="value" id="v-idle">--</div></div>
   </div>
+
+  <div class="recommendation">
+    <div class="label">Study recommendation</div>
+    <div class="text" id="v-recommendation">Waiting for data&hellip;</div>
+  </div>
+
+  <div id="idle-warning">
+    <div class="label">Idle warning</div>
+    <div class="text" id="idle-warning-text"></div>
+  </div>
+
+  <section class="controls">
+    <div class="controls-label">Session controls</div>
+    <div class="button-row">
+      <button id="btn-start">Start Focus</button>
+    </div>
+    <div class="button-row" style="margin-top: 8px;">
+      <button id="btn-pause">Pause</button>
+      <button id="btn-resume">Resume</button>
+      <button id="btn-break">Start Break</button>
+      <button id="btn-stop">Stop</button>
+    </div>
+  </section>
+</main>
+
+<footer>Copyright &copy; Jhon Paul Baonil 2026<br>Smart AI Assistant Platform</footer>
 
 <script>
-const POLL_MS = 1000; // ~1 Hz, per platform performance target
+const POLL_MS = 1000; // ~1 Hz telemetry poll
+const IDLE_WARNING_THRESHOLD_SECONDS = 60; // mirrors SESSION_IDLE_TIMEOUT in config.h
 
-const badge = document.getElementById('state-badge');
-const banner = document.getElementById('banner');
+const banner = document.getElementById('connection-banner');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const idleWarningBox = document.getElementById('idle-warning');
+const idleWarningText = document.getElementById('idle-warning-text');
+
 const els = {
   motion: document.getElementById('v-motion'),
   light: document.getElementById('v-light'),
@@ -145,30 +313,30 @@ function showBanner(msg) {
   banner.style.display = msg ? 'block' : 'none';
 }
 
-function setBadge(text, cls) {
-  badge.textContent = text;
-  badge.className = `state-badge ${cls}`;
+function setStatus(label, cls) {
+  statusText.textContent = label;
+  statusDot.className = `status-dot ${cls}`;
 }
 
 function applyTelemetry(data) {
-  els.motion.textContent = data.motion ? 'Detected' : 'None';
+  els.motion.textContent = data.motion ? 'Detected' : 'No motion';
   els.light.textContent = `${data.light}%`;
   els.session.textContent = fmtSeconds(data.sessionTime);
   els.idle.textContent = `${Math.floor(data.idleTime)}s`;
   els.rec.textContent = data.recommendation || '--';
 
-  if (data.stale) {
-    showBanner('Showing last known reading -- device unreachable.');
-  } else {
-    showBanner('');
-  }
+  showBanner(data.stale ? 'Showing last known reading -- device unreachable.' : '');
 
-  if (!data.motion && data.idleTime >= 60) {
-    setBadge('Idle', 'state-idle');
-  } else if (data.focus) {
-    setBadge('Focus', 'state-focus');
+  const idleTooLong = !data.motion && data.idleTime >= IDLE_WARNING_THRESHOLD_SECONDS;
+
+  if (idleTooLong) {
+    setStatus('Idle', 'idle');
+    idleWarningBox.style.display = 'block';
+    idleWarningText.textContent =
+      `You've been inactive for ${Math.floor(data.idleTime)}s. Return to your study session.`;
   } else {
-    setBadge('Break', 'state-break');
+    idleWarningBox.style.display = 'none';
+    setStatus(data.focus ? 'Focus' : 'Break', data.focus ? 'focus' : 'break');
   }
 }
 
@@ -179,14 +347,14 @@ async function pollState() {
 
     if (envelope.type === 'error') {
       showBanner(envelope.data.message || 'Device error.');
-      setBadge('Stopped', 'state-stopped');
+      setStatus('Stopped', 'stopped');
       return;
     }
 
     applyTelemetry(envelope.data);
   } catch (err) {
     showBanner('Cannot reach the backend.');
-    setBadge('Stopped', 'state-stopped');
+    setStatus('Stopped', 'stopped');
   }
 }
 
