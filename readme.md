@@ -9,12 +9,17 @@
 <img src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
 </p>
 
-**Sample Images of V2.0.0**<br>
+**Sample Image of V2.0.0**<br>
 <p align="center">
 <img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
 </p>
 
-**Sample Video**
+**Sample Image of V3.0.0**<br>
+<p align="center">
+<img src="./docs/screenshots/img4.png" alt="Screenshot description" width="500">
+</p>
+
+**Sample Video**<br>
 <video width="640" height="360" align="center" controls>
   <source src="./docs/screenshots/vid1.mp4" type="video/mp4">
 </video>
