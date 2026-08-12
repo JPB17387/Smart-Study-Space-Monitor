@@ -1,113 +1,67 @@
-# The architecture of the project
+# Smart Study AI Platform Architecture
 
-## Future Design for the project enclosure
-```
-+-----------------------------+
-| Smart Study Space Assistant |
-|                             |
-| OLED                        |
-| PIR Sensor                  |
-| Light Sensor                |
-| Push Button                 |
-| Status LEDs                 |
-|                             |
-+-----------------------------+
-```
-It is okay to use either this 3 (Perfboards, Custom PCB, Foam Board, Acrylic, Cardboard).
+## Current production architecture
 
-### Tools I will use in 3D Designing for the enclosure
+This project is a working Arduino UNO Q + Arduino App Lab deployment. The active architecture is not the historical OLED prototype; the production path is:
 
-> - Onshape
-> - Tinkercad
-
-### Dimensions of the Enclosure
-
-> - Width - 120mm
-> - Height - 85mm
-> - Depth - 40mm
-
-### Internal Layout
-```
-Top Cover
-────────────────────────────
-
- OLED Window
-
- PIR Hole
-
- LDR Hole
-
- Button Hole
-
- Buzzer Holes
-
-────────────────────────────
-
-
-Inside
-
-+-------------------------------------+
-
- OLED
-
- Arduino UNO Q
-
- Breadboard
-
- Wires
-
-+-------------------------------------+
-
-Bottom Cover
+```mermaid
+flowchart TD
+    Browser[Browser dashboard] --> WebUI[WebUI HTTP API]
+    WebUI --> Host[Python / App Lab host]
+    Host --> Bridge[RouterBridge / RPClite]
+    Bridge --> MCU[Arduino UNO Q MCU]
+    MCU --> PIR[PIR sensor]
+    MCU --> LDR[LDR sensor]
+    MCU --> Buzzer[Buzzer]
+    MCU --> Timer[Timer]
+    MCU --> Session[Session state]
+    MCU --> Rec[Recommendation fallback]
 ```
 
-### Mounting Layout
-```
-Top Cover
-────────────────────────────
+## Telemetry flow
 
- OLED Window
+1. The MCU reads PIR motion and LDR light state.
+2. The session and timer logic update focus, idle, and break state.
+3. The MCU recommendation logic computes the baseline recommendation string.
+4. The Python host requests telemetry over Bridge RPC.
+5. The host adds AI refinement if available and safe to run.
+6. The result is returned to the browser as a versioned telemetry envelope.
 
- PIR Hole
+## Command flow
 
- LDR Hole
+1. The browser triggers a fetch to `/api/command/{command}`.
+2. `python/main.py` routes the request to the host-side command handler.
+3. The host validates the command against a whitelist.
+4. The command is forwarded over RouterBridge / RPClite.
+5. The MCU executes the matching RPC callback registered in `sketch/communication.cpp`.
+6. A success or error envelope is returned to the UI.
 
- Button Hole
+## AI flow
 
- Buzzer Holes
+1. The MCU produces the deterministic recommendation result.
+2. The Python host builds an AI context summary from telemetry.
+3. The AI provider builds a prompt and issues a background inference request.
+4. The result is cached and throttled using context gating.
+5. The dashboard recommendation is AI-enhanced when available; otherwise it remains rule-based and stable.
 
-────────────────────────────
+## Fallback flow
 
+- AI failure does not break telemetry.
+- AI failure does not break sensors or control actions.
+- AI failure falls back to the MCU baseline recommendation.
+- Bridge failure triggers stale-telemetry fallback when available.
 
-Inside
+## Error flow
 
-+-------------------------------------+
+- Invalid commands return an `error` envelope.
+- Bridge communication problems return a structured `error` payload with a code and message.
+- AI failures are marked through `aiStatus` without taking the whole system offline.
+- Stale telemetry is flagged in the UI instead of blanking the dashboard.
 
- OLED
+## Design notes
 
- Arduino UNO Q
-
- Breadboard
-
- Wires
-
-+-------------------------------------+
-
-Bottom Cover
-```
-
-### Ventilation 
-<p>Include several small ventilation slots on the sides to help dissipate heat and improve airflow.</p>
-
-### USB Access
-<p>We'll include a cutout for the USB connector so you can upload new firmware without opening the enclosure.</p>
-
-### Sensor Openings 
-<p>We'll design:
-<br>
-    - a rectangular cutout for the OLED, <br>
-    - a circular opening for the PIR Fresnel lens, <br>
-    - a small hole for the LDR,<br>
-    - several small holes for the buzzer,<br>
-    - a round hole for the push button.<br>
-</p>
+- The MCU remains the authoritative source for sensor and session state.
+- The Python host is responsible for aggregation, AI layering, and App Lab/WebUI integration.
+- The WebUI is a thin dashboard and command surface over a trusted local communication path.
+- The current design assumes a trusted local or local-network deployment environment.
+- The protected `include/config.h` file remains untouched and is treated as a fixed embedded configuration contract.
