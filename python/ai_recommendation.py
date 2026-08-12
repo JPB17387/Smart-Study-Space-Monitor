@@ -26,8 +26,11 @@ provider "unavailable"/"error" and callers keep getting a usable
 recommendation (AI-cached, or rule-based) either way.
 """
 
+import logging
 import threading
 import time
+
+logger = logging.getLogger(__name__)
 
 try:
     from arduino.app_bricks.llm import LargeLanguageModel
@@ -37,6 +40,8 @@ except Exception as error:  # Brick not installed / not enabled on this board
     LargeLanguageModel = None
     _IMPORT_OK = False
     _IMPORT_ERROR = str(error)
+
+MAX_RECOMMENDATION_CHARS = 180
 
 SYSTEM_PROMPT = (
     "You are a concise study-environment assistant embedded in a student's "
@@ -149,12 +154,22 @@ class AIRecommendationProvider:
             context.get("idle_time_seconds", 0) >= 30,
         )
 
+    def _sanitize_text(self, response):
+        if response is None:
+            return ""
+
+        text = str(response).strip()
+        text = text.replace("```", " ")
+        text = " ".join(text.split())
+        text = text[:MAX_RECOMMENDATION_CHARS]
+        return text.strip()
+
     def _run_inference(self, context, rule_based_text):
         prompt = self._build_prompt(context, rule_based_text)
 
         try:
             response = self._llm.chat(prompt)
-            text = (response or "").strip()
+            text = self._sanitize_text(response)
 
             if not text:
                 raise ValueError("empty AI response")
@@ -165,6 +180,7 @@ class AIRecommendationProvider:
         except Exception:
             # Keep whatever was cached before (if anything); the caller
             # falls back to the rule-based text automatically otherwise.
+            logger.exception("AI recommendation inference failed; using fallback recommendation")
             with self._lock:
                 self._status = "error"
 

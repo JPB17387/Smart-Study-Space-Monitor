@@ -111,47 +111,45 @@ A0 → LDR AO
 ```
 Smart Study Space Monitor
 │
+├── app.yaml
+├── assets/
+│   └── index.html
 ├── docs/
-│   ├── 01_ARCHITECTURE_ANALYSIS.md
-│   ├── 02_REFACTOR_PLAN.md
-│   ├── 03_IMPLEMENTATION.md
-│   ├── 04_TEST_REPORT.md
-│   ├── PHASE6_6_IMPLEMENTATION.md
-│   ├── PHASE6_7_FOCUS_SESSION_LOGIC.md
-│   ├── PHASE6_OLED_ROOT_CAUSE_ANALYSIS.md
-│   ├── architecture.md
-│   ├── milestones.md
-│   ├── roadmap.md
-│   ├── screenshots/
-│   └── public/
-│
-├── include/
-│   └── config.h
-│
-├── lib/
-│
-├── src/
-│   ├── main.cpp
-│   ├── button.cpp
-│   ├── button.h
+│   ├── ARCHITECTURE.md
+│   ├── AI_ARCHITECTURE.md
+│   ├── COMMUNICATION_PROTOCOL.md
+│   ├── PHASE8_PRODUCTION_AUDIT.md
+│   ├── PHASE8_RELEASE_READINESS.md
+│   ├── RELEASE_CHECKLIST.md
+│   └── screenshots/
+├── python/
+│   ├── ai_recommendation.py
+│   ├── device.py
+│   ├── main.py
+│   └── protocol.py
+├── sketch/
 │   ├── buzzer.cpp
 │   ├── buzzer.h
+│   ├── communication.cpp
+│   ├── communication.h
+│   ├── config.h
 │   ├── ldr.cpp
 │   ├── ldr.h
+│   ├── main.cpp
 │   ├── pir.cpp
 │   ├── pir.h
 │   ├── recommendation.cpp
 │   ├── recommendation.h
 │   ├── session.cpp
 │   ├── session.h
+│   ├── sketch.ino
+│   ├── sketch.yaml
 │   ├── timer.cpp
-│   ├── timer.h
-│   ├── ui.cpp
-│   └── ui.h
-│
+│   └── timer.h
 ├── test/
-│
-├── platformio.ini
+│   └── test_ai_hardening.py
+├── include/
+│   └── config.h
 ├── readme.md
 ├── CHANGELOG.md
 ├── LICENSE-APACHE
