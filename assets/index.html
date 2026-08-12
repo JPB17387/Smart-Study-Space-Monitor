@@ -132,13 +132,39 @@
     margin-bottom: 16px;
   }
 
+  .recommendation .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
   .recommendation .label {
     font-family: "Segoe UI", sans-serif;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-    margin-bottom: 6px;
+  }
+
+  .ai-pill {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .ai-pill.ai-active {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   .recommendation .text {
@@ -258,7 +284,10 @@
   </div>
 
   <div class="recommendation">
-    <div class="label">Study recommendation</div>
+    <div class="label-row">
+      <div class="label" id="rec-label">Study recommendation</div>
+      <span class="ai-pill" id="ai-pill">Using local study rules</span>
+    </div>
     <div class="text" id="v-recommendation">Waiting for data&hellip;</div>
   </div>
 
@@ -301,6 +330,21 @@ const els = {
   rec: document.getElementById('v-recommendation'),
 };
 
+const recLabel = document.getElementById('rec-label');
+const aiPill = document.getElementById('ai-pill');
+
+function applyAiStatus(source, status) {
+  if (source === 'ai') {
+    recLabel.textContent = 'AI recommendation';
+    aiPill.textContent = 'AI ACTIVE';
+    aiPill.className = 'ai-pill ai-active';
+  } else {
+    recLabel.textContent = 'Study recommendation';
+    aiPill.className = 'ai-pill';
+    aiPill.textContent = status === 'generating' ? 'AI thinking\u2026' : 'Using local study rules';
+  }
+}
+
 function fmtSeconds(total) {
   const s = Math.max(0, Math.floor(total));
   const m = Math.floor(s / 60);
@@ -324,6 +368,7 @@ function applyTelemetry(data) {
   els.session.textContent = fmtSeconds(data.sessionTime);
   els.idle.textContent = `${Math.floor(data.idleTime)}s`;
   els.rec.textContent = data.recommendation || '--';
+  applyAiStatus(data.recommendationSource, data.aiStatus);
 
   showBanner(data.stale ? 'Showing last known reading -- device unreachable.' : '');
 

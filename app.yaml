@@ -3,4 +3,5 @@ description: Smart Study Space Monitor
 ports: []
 bricks:
 - arduino:web_ui: {}
+- arduino:llm: {}
 icon: 🤖

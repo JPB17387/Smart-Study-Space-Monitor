@@ -1,15 +1,18 @@
 """
-DeviceBridge — Linux-side aggregation layer over the Arduino Bridge RPC
+DeviceBridge -- Linux-side aggregation layer over the Arduino Bridge RPC
 calls exposed by communication.cpp.
 
-The MCU remains authoritative for all sensor/session/buzzer state; this
-module only aggregates individual RPC calls into a protocol envelope
-and forwards validated commands. No session logic is duplicated here.
+The MCU remains authoritative for all sensor/session/buzzer state, and
+its rule-based recommendation (recommendation.cpp) remains the primary
+and fallback source of truth. AIRecommendationProvider only refines it
+opportunistically -- see ai_recommendation.py for the layering and the
+non-blocking/background design.
 """
 
 from arduino.app_utils import Bridge
 
 import protocol
+from ai_recommendation import AIRecommendationProvider
 
 # Commands the WebUI may issue. Each name matches a Bridge.provide_safe
 # RPC already registered on the MCU (see communication.cpp) 1:1, so no
@@ -24,18 +27,23 @@ VALID_COMMANDS = frozenset(
     }
 )
 
+IDLE_WARNING_THRESHOLD_SECONDS = 60  # mirrors SESSION_IDLE_TIMEOUT in config.h
+
 
 class DeviceBridge:
     def __init__(self):
         # Last known-good telemetry. Served (flagged stale) if a poll
         # fails, so a transient Bridge hiccup doesn't blank the dashboard.
         self._last_data = None
+        self._ai = AIRecommendationProvider()
 
     def get_telemetry(self):
         """Polls the MCU over Bridge RPC and returns a telemetry envelope.
 
         On failure, returns an "error" envelope, or the last-good
-        telemetry marked stale if one is available.
+        telemetry marked stale if one is available. On success, layers
+        the (non-blocking, possibly cached) AI recommendation on top of
+        the MCU's rule-based one before returning.
         """
         try:
             data = {
@@ -57,6 +65,7 @@ class DeviceBridge:
                 "Could not reach the UNO Q microcontroller: {}".format(error),
             )
 
+        data = self._apply_ai_recommendation(data)
         self._last_data = data
         return protocol.build_telemetry(data)
 
@@ -82,3 +91,29 @@ class DeviceBridge:
             )
 
         return protocol.build_event("{}_ack".format(command))
+
+    # ---- AI layering -----------------------------------------------------
+
+    def _session_state(self, data):
+        if not data["motion"] and data["idleTime"] >= IDLE_WARNING_THRESHOLD_SECONDS:
+            return "idle"
+        return "focus" if data["focus"] else "break"
+
+    def _apply_ai_recommendation(self, data):
+        rule_based_text = data["recommendation"]
+        session_state = self._session_state(data)
+
+        context = {
+            "session_state": session_state,
+            "motion": data["motion"],
+            "light_percent": data["light"],
+            "session_time_seconds": data["sessionTime"],
+            "idle_time_seconds": data["idleTime"],
+        }
+
+        text, is_ai, ai_status = self._ai.get_recommendation(context, rule_based_text)
+
+        data["recommendation"] = text
+        data["recommendationSource"] = "ai" if is_ai else "rule"
+        data["aiStatus"] = ai_status  # unavailable | ready | generating | error
+        return data
