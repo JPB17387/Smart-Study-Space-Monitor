@@ -159,18 +159,31 @@ Smart Study Space Monitor
 
 ## Release Status
 
-### v2.0.0 — WebUI Release
-This release replaces the earlier OLED prototype experience with a browser-based dashboard for the Arduino Uno Q platform.
+### v1.0.0-rc1 — Release Candidate
 
-Implemented in this release:
-- WebUI dashboard for live telemetry
-- MCU-to-WebUI communication via Bridge RPC
-- Motion and light sensor telemetry
-- Session commands from the browser
-- Recommendation output displayed in the dashboard
+This is the **Release Candidate** for the Smart Study AI Platform. The project features an Arduino UNO Q platform with WebUI dashboard and AI-assisted study recommendations.
 
-### Legacy Notes
-The earlier v1.0.0 implementation used an SSD1306 OLED display and local button-based interaction. That path is now considered legacy and is no longer the primary release experience.
+**Release Status:** ✅ Ready for Release Candidate
+
+**Key Features:**
+- Arduino UNO Q WebUI dashboard with live telemetry
+- Motion and light sensor monitoring
+- AI-enhanced study recommendations with deterministic fallback
+- Session management (focus/break/idle with smart timeout)
+- Non-blocking buzzer feedback and idle warnings
+- Trusted-network deployment model
+
+**Documentation:**
+- **[RELEASE.md](docs/RELEASE.md)** — Comprehensive release notes, architecture, and features
+- **[QUICKSTART.md](docs/QUICKSTART.md)** — Developer guide for building and running the system
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Current production architecture
+- **[AI_ARCHITECTURE.md](docs/AI_ARCHITECTURE.md)** — AI layer design and fallback behavior
+- **[COMMUNICATION_PROTOCOL.md](docs/COMMUNICATION_PROTOCOL.md)** — RPC and API protocol specification
+
+**Legacy Notes:**
+- Earlier versions (v1.0.0, v2.0.0) used an SSD1306 OLED display and local button-based interaction
+- Historical documentation remains in the repository for development context
+- Current release focuses exclusively on UNO Q WebUI experience
 
 ## Project Structure
 The project now includes both embedded firmware and App Lab/WebUI components:
@@ -183,11 +196,8 @@ The project now includes both embedded firmware and App Lab/WebUI components:
 [Apache License](LICENSE-APACHE)<br>
 [MIT License](LICENSE-MIT)
 
-## Notes
+## Getting Started
 
-The current release is centered on the Uno Q WebUI experience rather than the legacy SSD1306 OLED interface.
+**New to this project?** Start with the [QUICKSTART.md](docs/QUICKSTART.md) guide for step-by-step setup and operation instructions.
 
-## Release Documentation
-- [Release Notes](RELEASE_NOTES.md)
-- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
-- [Phase 6 Documentation](docs/PHASE6_DOCUMENTATION.md)
+**Want release details?** See [RELEASE.md](docs/RELEASE.md) for comprehensive release notes, architecture, and known limitations.
