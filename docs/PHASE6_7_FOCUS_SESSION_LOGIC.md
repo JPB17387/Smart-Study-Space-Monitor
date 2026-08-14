@@ -1,4 +1,11 @@
-# Phase 6.7 — Focus Session Logic
+# HISTORICAL: Phase 6.7 — Focus Session Logic
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes session logic implementation for an earlier architecture phase. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
 
 ## 1. Overview
 

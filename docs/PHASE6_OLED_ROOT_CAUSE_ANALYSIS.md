@@ -1,8 +1,14 @@
-# Phase 6 — OLED Root Cause Analysis
+# HISTORICAL: Phase 6 — OLED Root Cause Analysis
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes debugging and resolution of an OLED initialization issue in an earlier implementation. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture and does not use the SSD1306 OLED display. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
 
 ## 1. Root Cause
 
-The OLED failure was AVR SRAM exhaustion during `Adafruit_SSD1306::begin()`. No individual initialization module caused the failure through a pin, Wire, constructor, or API conflict.
+The OLED failure (in an earlier implementation) was AVR SRAM exhaustion during `Adafruit_SSD1306::begin()`. No individual initialization module caused the failure through a pin, Wire, constructor, or API conflict.
 
 The SSD1306 library returns `false` immediately when its 128 x 64 framebuffer allocation fails:
 

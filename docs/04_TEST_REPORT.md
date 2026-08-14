@@ -1,4 +1,11 @@
-# Test Report
+# HISTORICAL: Test Report
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes testing from an earlier phase. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture and has already completed end-to-end hardware and integration validation. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
 
 ## Milestone 1
 

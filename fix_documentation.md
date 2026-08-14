@@ -1,12 +1,18 @@
-# Smart Study AI Platform
+# HISTORICAL: Smart Study AI Platform Bug Fix Documentation
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes bug fixes applied to an earlier OLED-based implementation. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the current production architecture.
+
+---
 
 ## Bug Fix Documentation
 
 ### Files Modified
 
-`src/ui.cpp`
+`src/ui.cpp` (historical OLED implementation, no longer active)
 
-Reason: Fixed the incomplete SELECT navigation integration. It referenced menu, session, screen, and drawing identifiers that are not declared anywhere in the project, and it added duplicate screen cases.
+Reason: Fixed the incomplete SELECT navigation integration in the earlier OLED-based UI.
 
 `fix_documentation.md`
 

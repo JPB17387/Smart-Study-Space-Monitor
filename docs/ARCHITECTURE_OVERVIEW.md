@@ -1,9 +1,15 @@
-# Smart Study AI Platform — Architecture Overview
+# HISTORICAL: Smart Study AI Platform — OLED Architecture
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes an earlier OLED-based implementation of the Smart Study AI Platform. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture and does not use this OLED-based design. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
 
 ## Project Scope
-This document describes the current firmware architecture for the Smart Study AI Platform as implemented in the current workspace.
+This document describes a legacy firmware architecture for the Smart Study AI Platform.
 
-The firmware runs on an Arduino Uno using the Arduino core and Adafruit SSD1306 OLED display library. It coordinates:
+The legacy firmware ran on an Arduino Uno using the Arduino core and Adafruit SSD1306 OLED display library. It coordinated:
 - PIR motion sensing
 - LDR ambient light sensing
 - push-button navigation

@@ -1,4 +1,10 @@
-# Smart Study AI Platform Technical Walkthrough
+# HISTORICAL: Smart Study AI Platform Technical Walkthrough
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes the OLED-based implementation. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
 
 ## Power On
 1. The Arduino Uno receives power.

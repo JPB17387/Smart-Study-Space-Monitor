@@ -1,4 +1,11 @@
-# Architecture Analysis
+# HISTORICAL: Architecture Analysis
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes analysis from an earlier phase of the project. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
 
 ## Summary
 

@@ -1,4 +1,12 @@
-# Roadmap for the Project
+# HISTORICAL: Project Roadmap
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes an earlier roadmap for the OLED-based implementation phases. The current production implementation is on the Arduino UNO Q + App Lab WebUI architecture (Phase 8+). See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
+# Earlier Phases (OLED Implementation)
 
 ```
 Smart Study AI Platform Roadmap

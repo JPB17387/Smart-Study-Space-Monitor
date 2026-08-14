@@ -1,4 +1,11 @@
-# Refactor Plan
+# HISTORICAL: Refactor Plan
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes a refactoring plan from an earlier phase. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
 
 ## Summary
 

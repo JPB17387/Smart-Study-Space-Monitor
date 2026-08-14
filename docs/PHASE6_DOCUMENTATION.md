@@ -1,7 +1,13 @@
-# Phase 6 Technical Documentation
+# HISTORICAL: Phase 6 Technical Documentation
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes an earlier OLED-based implementation of the Smart Study AI Platform from Phase 6. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
 
 ## Overview
-This document records the current Phase 6 implementation of the Smart Study AI Platform based strictly on the present firmware.
+This document records Phase 6 implementation of an earlier OLED-based version of the Smart Study AI Platform.
 
 The code implements a complete firmware stack for the Arduino Uno, including:
 - OLED startup and menu UI

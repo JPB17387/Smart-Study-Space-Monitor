@@ -1,6 +1,12 @@
-# Smart Study AI Platform — Testing Documentation
+# HISTORICAL: Smart Study AI Platform — Testing Documentation
 
-This document describes verification points that can be derived from the current code and build configuration.
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes testing procedures for the OLED-based implementation. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture and has already completed end-to-end hardware and integration validation. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+
+This document describes verification points that can be derived from the code and build configuration.
 
 ## Build / Compile Test
 - Status: NOT VERIFIED

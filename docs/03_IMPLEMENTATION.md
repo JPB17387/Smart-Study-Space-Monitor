@@ -1,4 +1,11 @@
-# Implementation Record
+# HISTORICAL: Implementation
+
+⚠️ **HISTORICAL DOCUMENTATION**
+
+This document describes implementation work from an earlier phase. The current production implementation uses the Arduino UNO Q + App Lab WebUI architecture. See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for the current production architecture.
+
+---
+ Record
 
 ## Milestone 1 — Compile Baseline Stabilization
 
