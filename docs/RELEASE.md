@@ -13,7 +13,7 @@ This repository represents the release candidate for the Smart Study AI Platform
 **Arduino UNO Q**
 
 The platform is designed for the Arduino UNO Q microcontroller running the Zephyr/Arduino firmware environment.
-
+ 
 ### Runtime Architecture
 
 The Smart Study AI Platform uses a multi-tier architecture connecting the Arduino MCU to a browser-based dashboard:

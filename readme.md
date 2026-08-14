@@ -4,25 +4,38 @@
 <p align="center">This is the main project repository of my project for Hackster Invent the Future Global Hackathon.</p>
 
 **Sample Images of V1.0.0**<br>
+
+
 <p align="center">
+
+> UI Appearance | Only Hardware.
 <img src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
+
+> There are no Web UI because this is using the classic Arduino UNO R3 Micro-controller.
 <img src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
 </p>
 
 **Sample Image of V2.0.0**<br>
+
 <p align="center">
+
+> UI Appearance
 <img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
 </p>
 
 **Sample Image of V3.0.0**<br>
+
 <p align="center">
+
+> UI Appearance
 <img src="./docs/screenshots/img4.png" alt="Screenshot description" width="500">
 </p>
 
-**Sample Video**<br>
-<video width="640" height="360" align="center" controls>
-  <source src="./docs/screenshots/vid1.mp4" type="video/mp4">
-</video>
+<p align="center">
+
+> Hardware Appearance
+<img src="./public/images/physical_appearance_final.jpg" alt="Screenshot description" width="500">
+</p>
 
 ## Project Overview
 Smart Study AI Platform is an Arduino Uno Q project that combines environmental sensing, session management, and a browser-based WebUI. The current release focuses on a live dashboard that displays motion, ambient light, session timing, and recommendation feedback through Arduino App Lab.
@@ -51,7 +64,7 @@ OUT → D2
 ```
 If your LDR module has pins:
 
-AO
+AO 
 DO
 GND
 VCC
@@ -163,7 +176,7 @@ Smart Study Space Monitor
 
 This is the **Release Candidate** for the Smart Study AI Platform. The project features an Arduino UNO Q platform with WebUI dashboard and AI-assisted study recommendations.
 
-**Release Status:** ✅ Ready for Release Candidate
+**Release Status:** Ready for Release Candidate
 
 **Key Features:**
 - Arduino UNO Q WebUI dashboard with live telemetry
