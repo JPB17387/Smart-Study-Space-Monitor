@@ -8,10 +8,10 @@
 
 <p align="center">
 
-> UI Appearance | Only Hardware.
+> OLED UI | Only Hardware.
 <img src="./docs/screenshots/img1.jpg" alt="Screenshot description" width="500">
 
-> There are no Web UI because this is using the classic Arduino UNO R3 Micro-controller.
+> There are no Web UI in this version because this is using the classic Arduino UNO R3 Micro-controller.
 <img src="./docs/screenshots/img2.jpg" alt="Screenshot description" width="500">
 </p>
 
@@ -19,7 +19,7 @@
 
 <p align="center">
 
-> UI Appearance
+> UI Appearance using WebUI();
 <img src="./docs/screenshots/img3.png" alt="Screenshot description" width="500">
 </p>
 
@@ -27,7 +27,7 @@
 
 <p align="center">
 
-> UI Appearance
+> UI Appearance using WebUI();
 <img src="./docs/screenshots/img4.png" alt="Screenshot description" width="500">
 </p>
 
